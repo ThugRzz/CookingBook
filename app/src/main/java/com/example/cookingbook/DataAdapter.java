@@ -34,7 +34,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
-        holder.imageView.setImageResource(recipe.getImage());
+        holder.imageView.setImageResource(Integer.parseInt(recipe.getImage()));
         holder.titleView.setText(recipe.getTitle());
         holder.compositionView.setText(recipe.getComposition());
         holder.descriptionView.setText(recipe.getDescription());
@@ -61,7 +61,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                     int positionIndex = getAdapterPosition();
                     Recipe recipe = recipes.get(positionIndex);
                     String title = recipe.getTitle();
-                    int image = recipe.getImage();
+                    int image = Integer.parseInt(recipe.getImage());
                     String composition = recipe.getComposition();
                     String description = recipe.getDescription();
                     Intent intent= new Intent(parent,RecipeCard.class);

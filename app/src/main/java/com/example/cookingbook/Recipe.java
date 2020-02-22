@@ -1,38 +1,54 @@
 package com.example.cookingbook;
 
 public class Recipe {
+    private String email;
     private String title;
     private String description;
     private String composition;
-    private int image;
-    public Recipe(String title, String composition,String description,int image){
+    private String image;
+
+    public Recipe(String title, String composition, String description){
         this.title=title;
         this.composition=composition;
         this.description=description;
-        this.image=image;
     }
-    public void setTitle(String title){
-        this.title=title;
+
+    public Recipe(String title, String composition, String description, String image) {
+        this.title = title;
+        this.composition = composition;
+        this.description = description;
+        this.image = image;
     }
-    public void setDescription(String description){
-        this.description=description;
+
+    public void setTitle(String title) {
+        this.title = title;
     }
-    public void setComposition(String composition){
-        this.composition=composition;
+
+    public void setDescription(String description) {
+        this.description = description;
     }
-    public void setImage(int image){
-        this.image=image;
+
+    public void setComposition(String composition) {
+        this.composition = composition;
     }
-    public String getTitle(){
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getTitle() {
         return this.title;
     }
-    public String getDescription(){
+
+    public String getDescription() {
         return this.description;
     }
-    public String getComposition(){
+
+    public String getComposition() {
         return this.composition;
     }
-    public int getImage(){
+
+    public String getImage() {
         return this.image;
     }
 }

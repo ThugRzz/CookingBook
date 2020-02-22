@@ -8,7 +8,8 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_recipes">Recipes</string>
-    <string name="menu_gallery">Gallery</string>
+    <string name="menu_myrecipes">My recipes</string>
+    <string name="menu_gallery">My recipes</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
