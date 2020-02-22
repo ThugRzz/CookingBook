@@ -1,5 +1,6 @@
 package com.example.cookingbook.ui.gallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,24 +13,26 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.cookingbook.NewRecipe;
 import com.example.cookingbook.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class GalleryFragment extends Fragment {
+public class GalleryFragment extends Fragment implements View.OnClickListener {
 
-    private GalleryViewModel galleryViewModel;
+    private FloatingActionButton addNewRecipe;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        galleryViewModel =
-                ViewModelProviders.of(this).get(GalleryViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        addNewRecipe=root.findViewById(R.id.newRecipe);
+        addNewRecipe.setOnClickListener(this);
         return root;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(getContext(), NewRecipe.class);
+        startActivity(intent);
     }
 }

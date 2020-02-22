@@ -37,9 +37,9 @@ public class HomeFragment extends Fragment {
     private List<Recipe> setInitialData(){
         List<Recipe> recipes = new ArrayList<>();
         for(int i = 0;i<3;i++) {
-            recipes.add(new Recipe("Pizza", "Cheese\nDough\nMeat", "Description", R.drawable.pizza));
+           /* recipes.add(new Recipe("Pizza", "Cheese\nDough\nMeat", "Description", R.drawable.pizza));
             recipes.add(new Recipe("Burger", "Bread\nBeef\nCheese", "Description", R.drawable.burger));
-            recipes.add(new Recipe("Roll", "Rice\nNori\nSalmon", "Description", R.drawable.roll));
+            recipes.add(new Recipe("Roll", "Rice\nNori\nSalmon", "Description", R.drawable.roll));*/
         }
         return recipes;
     }

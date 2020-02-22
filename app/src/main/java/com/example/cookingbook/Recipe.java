@@ -1,12 +1,19 @@
 package com.example.cookingbook;
 
 public class Recipe {
+    private String email;
     private String title;
     private String description;
     private String composition;
-    private int image;
+    private String image;
 
-    public Recipe(String title, String composition, String description, int image) {
+    public Recipe(String title, String composition, String description){
+        this.title=title;
+        this.composition=composition;
+        this.description=description;
+    }
+
+    public Recipe(String title, String composition, String description, String image) {
         this.title = title;
         this.composition = composition;
         this.description = description;
@@ -25,7 +32,7 @@ public class Recipe {
         this.composition = composition;
     }
 
-    public void setImage(int image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -41,7 +48,7 @@ public class Recipe {
         return this.composition;
     }
 
-    public int getImage() {
+    public String getImage() {
         return this.image;
     }
 }
