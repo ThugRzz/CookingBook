@@ -1,5 +1,6 @@
 package com.example.cookingbook;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,9 +13,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 public class NewRecipe extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,6 +40,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
     DatabaseReference mRef;
+    private StorageReference mStorageRef;
 
 
     @Override
@@ -49,6 +58,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -56,16 +66,48 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
-            fullPhotoURI=data.getData();
-            createImage.setImageURI(fullPhotoURI);
+            final Uri selectedImage = data.getData();
+            String name = generateRandomNameForImage();
+            final StorageReference imageRef = mStorageRef.child("images/" + name + ".jpg");
+            UploadTask uploadTask = imageRef.putFile(selectedImage);
+            Task<Uri> uriTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return imageRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        if (downloadUri != null) {
+                            String photoStringLink = downloadUri.toString();
+                            setImageUrl(photoStringLink);
+                        }
+                    }
+                }
+            });
         }
+    }
+
+    private void setImageUrl(String url) {
+        image = url;
+        Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.defaultimage)
+                .fit()
+                .centerCrop()
+                .into(createImage);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
-                if (createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
+                if (image.isEmpty()||createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipe.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
                 }
                 title = createTitle.getText().toString();
@@ -75,7 +117,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
                         title,
                         composition,
                         description,
-                        fullPhotoURI.toString());
+                        image);
                 mRef = mDatabase.getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
                 mRef.push().setValue(recipe);
                 clearData();
@@ -92,10 +134,23 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         }
     }
 
+    private String generateRandomNameForImage() {
+        String symbols = "qwertyuiopasdfghjklzxcvbnm";
+        StringBuilder randString = new StringBuilder();
+
+        int count = 10 + (int) (Math.random() * 30);
+
+        for (int i = 0; i < count; i++)
+            randString.append(symbols.charAt((int) (Math.random() * symbols.length())));
+
+        return randString.toString();
+    }
+
     private void clearData() {
         createTitle.setText("");
         createComposition.setText("");
         createDescription.setText("");
         createImage.setImageResource(0);
+        image="";
     }
 }
