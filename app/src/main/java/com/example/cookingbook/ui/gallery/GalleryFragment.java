@@ -1,10 +1,12 @@
 package com.example.cookingbook.ui.gallery;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -12,20 +14,100 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookingbook.NewRecipe;
 import com.example.cookingbook.R;
+import com.example.cookingbook.Recipe;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 public class GalleryFragment extends Fragment implements View.OnClickListener {
 
     private FloatingActionButton addNewRecipe;
+    private RecyclerView recipeList;
+    private DatabaseReference mRef;
+    private Query query;
+    private FirebaseAuth mAuth;
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Recipe>()
+                .setQuery(query, Recipe.class)
+                .build();
+
+        FirebaseRecyclerAdapter<Recipe, ViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, ViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Recipe model) {
+                String recipeID = getRef(position).getKey();
+                mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String recipeImage = dataSnapshot.child("image").getValue().toString();
+                        String recipeTitle = dataSnapshot.child("title").getValue().toString();
+                        String recipeComposition = dataSnapshot.child("composition").getValue().toString();
+                        String recipeDescription = dataSnapshot.child("description").getValue().toString();
+
+                        holder.myTitle.setText(recipeTitle);
+                        holder.myComposition.setText(recipeComposition);
+                        holder.myDescription.setText(recipeDescription);
+                        dataSnapshot.getChildrenCount();
+
+                        Picasso.get()
+                                .load(Uri.parse(recipeImage))
+                                .placeholder(R.drawable.defaultimage)
+                                .fit()
+                                .centerInside()
+                                .into(holder.myImage);
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_item, parent, false);
+                return new ViewHolder(view);
+            }
+        };
+        recipeList.setAdapter(adapter);
+        adapter.startListening();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        addNewRecipe=root.findViewById(R.id.newRecipe);
+        recipeList = root.findViewById(R.id.myList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        recipeList.setLayoutManager(layoutManager);
+
+        mAuth = FirebaseAuth.getInstance();
+        String currentUid = mAuth.getUid();
+
+        query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
+
+        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
+
+        addNewRecipe = root.findViewById(R.id.newRecipe);
         addNewRecipe.setOnClickListener(this);
         return root;
     }
@@ -34,5 +116,19 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Intent intent = new Intent(getContext(), NewRecipe.class);
         startActivity(intent);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView myTitle, myComposition, myDescription;
+        ImageView myImage;
+
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            myTitle = itemView.findViewById(R.id.myTitle);
+            myComposition = itemView.findViewById(R.id.myComposition);
+            myDescription = itemView.findViewById(R.id.myDescription);
+            myImage = itemView.findViewById(R.id.myImage);
+        }
     }
 }

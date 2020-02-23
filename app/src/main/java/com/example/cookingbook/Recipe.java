@@ -7,6 +7,10 @@ public class Recipe {
     private String composition;
     private String image;
 
+    Recipe(){
+
+    }
+
     public Recipe(String title, String composition, String description){
         this.title=title;
         this.composition=composition;
