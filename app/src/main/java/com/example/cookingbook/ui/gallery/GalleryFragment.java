@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cookingbook.NewRecipe;
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
+import com.example.cookingbook.RecipeCard;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,9 +49,9 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                 .setQuery(query, Recipe.class)
                 .build();
 
-        FirebaseRecyclerAdapter<Recipe, ViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, ViewHolder>(options) {
+        FirebaseRecyclerAdapter<Recipe, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, MyViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Recipe model) {
+            protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Recipe model) {
                 String recipeID = getRef(position).getKey();
                 mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -59,7 +60,17 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                         String recipeTitle = dataSnapshot.child("title").getValue().toString();
                         String recipeComposition = dataSnapshot.child("composition").getValue().toString();
                         String recipeDescription = dataSnapshot.child("description").getValue().toString();
-
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent recipeIntent = new Intent(getContext(), RecipeCard.class);
+                                recipeIntent.putExtra("image",recipeImage);
+                                recipeIntent.putExtra("title",recipeTitle);
+                                recipeIntent.putExtra("composition",recipeComposition);
+                                recipeIntent.putExtra("description",recipeDescription);
+                                startActivity(recipeIntent);
+                            }
+                        });
                         holder.myTitle.setText(recipeTitle);
                         holder.myComposition.setText(recipeComposition);
                         holder.myDescription.setText(recipeDescription);
@@ -83,9 +94,9 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
             @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_item, parent, false);
-                return new ViewHolder(view);
+                return new MyViewHolder(view);
             }
         };
         recipeList.setAdapter(adapter);
@@ -118,12 +129,12 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView myTitle, myComposition, myDescription;
         ImageView myImage;
 
 
-        public ViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             myTitle = itemView.findViewById(R.id.myTitle);
             myComposition = itemView.findViewById(R.id.myComposition);

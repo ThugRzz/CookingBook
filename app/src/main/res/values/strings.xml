@@ -14,4 +14,6 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_info">About us</string>
+    <string name="search_query_hint">Введите название</string>
+    <string name="ion_search">🔍</string>
 </resources>

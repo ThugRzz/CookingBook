@@ -119,8 +119,6 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
                         description,
                         image);
                 mRef = mDatabase.getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
-                DatabaseReference recipes =mDatabase.getReference().child("recipes");
-                recipes.push().setValue(recipe);
                 mRef.push().setValue(recipe);
                 clearData();
 
