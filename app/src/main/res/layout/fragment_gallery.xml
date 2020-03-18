@@ -7,8 +7,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="400dp"
+        android:layout_height="537dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/newRecipe"
@@ -21,4 +24,15 @@
         app:layout_constraintHorizontal_bias="0.912"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_menu_add" />
+
+    <EditText
+        android:id="@+id/awd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

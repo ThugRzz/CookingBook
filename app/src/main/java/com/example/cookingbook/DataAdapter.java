@@ -2,6 +2,7 @@ package com.example.cookingbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookingbook.ui.home.HomeFragment;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
-    private List<Recipe> recipes;
+    private ArrayList<Recipe> recipes;
     private Context parent;
 
-    public DataAdapter(List<Recipe> recipes, Context parent) {
+    public DataAdapter(ArrayList<Recipe> recipes, Context parent) {
         this.recipes = recipes;
         this.parent = parent;
     }
@@ -34,7 +37,12 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Recipe recipe = recipes.get(position);
-        holder.imageView.setImageResource(Integer.parseInt(recipe.getImage()));
+        Picasso.get()
+                .load(Uri.parse(recipe.getImage()))
+                .placeholder(R.drawable.defaultimage)
+                .fit()
+                .centerInside()
+                .into(holder.imageView);
         holder.titleView.setText(recipe.getTitle());
         holder.compositionView.setText(recipe.getComposition());
         holder.descriptionView.setText(recipe.getDescription());
@@ -43,6 +51,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return recipes.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,7 +68,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             titleView = view.findViewById(R.id.title);
             compositionView = view.findViewById(R.id.composition);
             descriptionView = view.findViewById(R.id.description);
-            view.setOnClickListener(new View.OnClickListener() {
+/*            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int positionIndex = getAdapterPosition();
@@ -71,7 +84,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                     intent.putExtra("description",description);
                     parent.startActivity(intent);
                 }
-            });
+            });*/
         }
     }
 }

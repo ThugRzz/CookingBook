@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -55,17 +56,20 @@ public class RecipeCard extends AppCompatActivity {
         composition = getIntent().getExtras().getString("composition");
         description = getIntent().getExtras().getString("description");
         ImageView imageView = findViewById(R.id.pic);
-        TextView titleView = findViewById(R.id.cardTitle);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
+/*        TextView titleView = findViewById(R.id.cardTitle);
         TextView compositionView = findViewById(R.id.cardComposition);
-        TextView descriptionView = findViewById(R.id.cardDescription);
+        TextView descriptionView = findViewById(R.id.cardDescription);*/
         Picasso.get()
                 .load(Uri.parse(image))
                 .placeholder(R.drawable.defaultimage)
                 .fit()
                 .centerInside()
                 .into(imageView);
-        titleView.setText(title);
+/*      collapsingToolbarLayout.setTitle(title);
         compositionView.setText(composition);
-        descriptionView.setText(description);
+        descriptionView.setText(description);*/
     }
 }

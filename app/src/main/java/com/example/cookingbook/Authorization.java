@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class Authorization extends AppCompatActivity implements View.OnClickListener {
 
@@ -46,6 +47,7 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.signIn).setOnClickListener(this);
 
         FirebaseUser user = mAuth.getCurrentUser();
+
         if (user != null) {
             gotoMain();
         }
