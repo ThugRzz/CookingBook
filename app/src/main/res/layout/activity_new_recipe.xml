@@ -22,7 +22,7 @@
 
                 <EditText
                     android:id="@+id/Title"
-                    android:layout_width="400dp"
+                    android:layout_width="380dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="16dp"
                     android:ems="10"
@@ -32,22 +32,22 @@
 
                 <EditText
                     android:id="@+id/Composition"
-                    android:layout_width="400dp"
+                    android:layout_width="380dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="24dp"
                     android:ems="10"
                     android:hint="Composition"
-                    android:inputType="textPersonName"
+                    android:inputType="textMultiLine"
                     android:singleLine="false" />
 
                 <EditText
                     android:id="@+id/Description"
-                    android:layout_width="400dp"
+                    android:layout_width="380dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="16dp"
                     android:ems="10"
                     android:hint="Description"
-                    android:inputType="textPersonName"
+                    android:inputType="textMultiLine"
                     android:singleLine="false" />
 
                 <ImageView

@@ -40,6 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GalleryFragment extends Fragment implements View.OnClickListener {
 
@@ -67,50 +69,25 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                 holder.myTitle.setText(model.getTitle());
                 holder.myComposition.setText(model.getComposition());
                 holder.myDescription.setText(model.getDescription());
-
                 Picasso.get()
                         .load(Uri.parse(model.getImage()))
                         .placeholder(R.drawable.defaultimage)
                         .fit()
                         .centerInside()
                         .into(holder.myImage);
-             /*   mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String recipeImage = dataSnapshot.child("image").getValue().toString();
-                        String recipeTitle = dataSnapshot.child("title").getValue().toString();
-                        String recipeComposition = dataSnapshot.child("composition").getValue().toString();
-                        String recipeDescription = dataSnapshot.child("description").getValue().toString();
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent recipeIntent = new Intent(getContext(), RecipeCard.class);
-                                recipeIntent.putExtra("image",recipeImage);
-                                recipeIntent.putExtra("title",recipeTitle);
-                                recipeIntent.putExtra("composition",recipeComposition);
-                                recipeIntent.putExtra("description",recipeDescription);
-                                startActivity(recipeIntent);
-                            }
-                        });
-                        holder.myTitle.setText(recipeTitle);
-                        holder.myComposition.setText(recipeComposition);
-                        holder.myDescription.setText(recipeDescription);
-                        dataSnapshot.getChildrenCount();
-
-                        Picasso.get()
-                                .load(Uri.parse(recipeImage))
-                                .placeholder(R.drawable.defaultimage)
-                                .fit()
-                                .centerInside()
-                                .into(holder.myImage);
-
+                    public void onClick(View v) {
+                        Intent recipeIntent = new Intent(getContext(), RecipeCard.class);
+                        recipeIntent.putExtra("image", model.getImage());
+                        recipeIntent.putExtra("title", model.getTitle());
+                        recipeIntent.putExtra("composition", model.getComposition());
+                        recipeIntent.putExtra("description", model.getDescription());
+                        startActivity(recipeIntent);
                     }
+                });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
             }
 
             @NonNull
@@ -122,6 +99,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         };
         recipeList.setAdapter(adapter);
         adapter.startListening();
+        Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
+        adapter.notifyDataSetChanged();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -135,7 +114,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         String currentUid = mAuth.getUid();
         list = new ArrayList<>();
-        editText=root.findViewById(R.id.awd);
+        editText = root.findViewById(R.id.awd);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -149,11 +128,11 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(!s.toString().isEmpty()){
+                if (!s.toString().isEmpty()) {
                     search(s.toString());
-                }
-                else{
-                    Toast.makeText(getContext(),"Nothing found",Toast.LENGTH_SHORT).show();
+                } else {
+                    search("");
+
                 }
             }
         });
@@ -187,21 +166,22 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-    private void search(String s){
+
+    private void search(String s) {
         Query searchQuery = mRef.orderByChild("title")
                 .startAt(s)
-                .endAt(s+"\uf0ff");
+                .endAt(s + "\uf0ff");
         searchQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChildren()){
+                if (dataSnapshot.hasChildren()) {
                     list.clear();
-                    for(DataSnapshot dss: dataSnapshot.getChildren()){
+                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
                         final Recipe recipe = dss.getValue(Recipe.class);
                         list.add(recipe);
                     }
 
-                    DataAdapter myAdapter = new DataAdapter(list,getContext());
+                    DataAdapter myAdapter = new DataAdapter(list, getContext());
                     recipeList.setAdapter(myAdapter);
                     myAdapter.notifyDataSetChanged();
                 }

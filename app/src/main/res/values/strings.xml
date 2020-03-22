@@ -16,4 +16,15 @@
     <string name="menu_info">About us</string>
     <string name="search_query_hint">Введите название</string>
     <string name="ion_search">🔍</string>
+
+    <!-- Authorization -->
+    <string name="book">BookI</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="read_it_together">Let\'s cook it together</string>
+    <string name="skip">Skip</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forget_password">Forget Password?</string>
 </resources>

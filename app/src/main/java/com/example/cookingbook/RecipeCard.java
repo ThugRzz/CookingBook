@@ -59,17 +59,16 @@ public class RecipeCard extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
-/*        TextView titleView = findViewById(R.id.cardTitle);
         TextView compositionView = findViewById(R.id.cardComposition);
-        TextView descriptionView = findViewById(R.id.cardDescription);*/
+        TextView descriptionView = findViewById(R.id.cardDescription);
         Picasso.get()
                 .load(Uri.parse(image))
                 .placeholder(R.drawable.defaultimage)
                 .fit()
                 .centerInside()
                 .into(imageView);
-/*      collapsingToolbarLayout.setTitle(title);
+        collapsingToolbarLayout.setTitle(title);
         compositionView.setText(composition);
-        descriptionView.setText(description);*/
+        descriptionView.setText(description);
     }
 }
