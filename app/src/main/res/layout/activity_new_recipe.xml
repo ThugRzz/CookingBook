@@ -6,68 +6,78 @@
     android:layout_height="match_parent"
     tools:context=".NewRecipe">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/Title"
-                    android:layout_width="380dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Title"
-                    android:inputType="textPersonName"
-                    android:singleLine="false" />
+                    android:background="@drawable/shaped_edittext"
+                    android:paddingLeft="10dp"
+                    android:hint="Title" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/Composition"
-                    android:layout_width="380dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Composition"
                     android:inputType="textMultiLine"
-                    android:singleLine="false" />
+                    android:paddingLeft="10dp"
+                    android:singleLine="false"
+                    android:textColorHint="@android:color/holo_green_light" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/Description"
-                    android:layout_width="380dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Description"
                     android:inputType="textMultiLine"
+                    android:paddingLeft="10dp"
                     android:singleLine="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView
-                    android:id="@+id/recipePic"
-                    android:layout_width="150dp"
-                    android:layout_height="200dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="56dp"
-                    app:srcCompat="@android:color/holo_blue_bright" />
+            <ImageView
+                android:id="@+id/recipePic"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="56dp"
+                app:srcCompat="@drawable/nophoto" />
 
-                <Button
-                    android:id="@+id/confirm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="50dp"
-                    android:text="Подтвердить" />
-            </LinearLayout>
-        </ScrollView>
-
-    </LinearLayout>
+            <Button
+                android:id="@+id/confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:text="Подтвердить" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

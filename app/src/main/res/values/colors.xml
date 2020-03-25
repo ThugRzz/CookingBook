@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F44336</color>
-    <color name="colorPrimaryDark">#D32F2F</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#333C46</color>
+    <color name="colorPrimaryDark">#273036</color>
+    <color name="colorAccent">#B9BBBD</color>
     <color name="colorBackground">#333C46</color>
     <color name="colorSplashText">#F0F0F0</color>
-    <color name="colorProgressBar">#FFCE511C</color>
+    <color name="colorProgressBar">#CE511C</color>
     <color name="colorTextView">#83898E</color>
 </resources>
+
+<!--303F9F - primary dark
+3F51B5 - primary-->

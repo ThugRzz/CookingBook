@@ -1,7 +1,9 @@
 package com.example.cookingbook;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ public class RecipeCard extends AppCompatActivity {
     private String title;
     private String composition;
     private String description;
+    private String recipeRef;
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
     DatabaseReference mRef;
@@ -49,12 +52,17 @@ public class RecipeCard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_card);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
         mAuth=FirebaseAuth.getInstance();
         mDatabase=FirebaseDatabase.getInstance();
         image = getIntent().getExtras().getString("image");
         title = getIntent().getExtras().getString("title");
         composition = getIntent().getExtras().getString("composition");
         description = getIntent().getExtras().getString("description");
+        recipeRef=getIntent().getExtras().getString("recipe_ref");
+        Toast.makeText(this,recipeRef,Toast.LENGTH_SHORT).show();
         ImageView imageView = findViewById(R.id.pic);
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
@@ -70,5 +78,6 @@ public class RecipeCard extends AppCompatActivity {
         collapsingToolbarLayout.setTitle(title);
         compositionView.setText(composition);
         descriptionView.setText(description);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 }

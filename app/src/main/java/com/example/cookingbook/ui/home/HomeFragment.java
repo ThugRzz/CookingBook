@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment {
         recipesRecyclerView=root.findViewById(R.id.list);
         mAuth=FirebaseAuth.getInstance();
 
-        query= FirebaseDatabase.getInstance().getReference().child("recipes");
+        query= FirebaseDatabase.getInstance().getReference().child("recipes").orderByChild("title");
         recipesRef=FirebaseDatabase.getInstance().getReference().child("recipes");
 
         return root;

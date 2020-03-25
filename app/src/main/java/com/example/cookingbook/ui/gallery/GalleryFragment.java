@@ -5,12 +5,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +49,9 @@ import java.util.Comparator;
 
 public class GalleryFragment extends Fragment implements View.OnClickListener {
 
+    final int MENU_SHARE = 1;
+    final int MENU_DELETE = 2;
+
     private FloatingActionButton addNewRecipe;
     private RecyclerView recipeList;
     private DatabaseReference mRef;
@@ -53,6 +60,10 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     private ArrayList<Recipe> list;
     private ArrayList<Recipe> filtered;
     private EditText editText;
+    private FirebaseDatabase mDatabase;
+    private String recipeID;
+    DatabaseReference ref;
+
 
 
     @Override
@@ -65,7 +76,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         FirebaseRecyclerAdapter<Recipe, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, MyViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Recipe model) {
-                String recipeID = getRef(position).getKey();
+                recipeID = getRef(position).getKey();
                 holder.myTitle.setText(model.getTitle());
                 holder.myComposition.setText(model.getComposition());
                 holder.myDescription.setText(model.getDescription());
@@ -76,6 +87,17 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                         .centerInside()
                         .into(holder.myImage);
 
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                       String a = Integer.toString(holder.getAdapterPosition());
+                        Toast.makeText(getContext(),a,Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+
+
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -84,6 +106,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                         recipeIntent.putExtra("title", model.getTitle());
                         recipeIntent.putExtra("composition", model.getComposition());
                         recipeIntent.putExtra("description", model.getDescription());
+                        recipeIntent.putExtra("recipe_ref",recipeID);
                         startActivity(recipeIntent);
                     }
                 });
@@ -97,10 +120,11 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                 return new MyViewHolder(view);
             }
         };
+
         recipeList.setAdapter(adapter);
         adapter.startListening();
-        Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
-        adapter.notifyDataSetChanged();
+      /*  Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
+        adapter.notifyDataSetChanged();*/
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -110,7 +134,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         recipeList = root.findViewById(R.id.myList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recipeList.setLayoutManager(layoutManager);
-
+        registerForContextMenu(recipeList);
         mAuth = FirebaseAuth.getInstance();
         String currentUid = mAuth.getUid();
         list = new ArrayList<>();
@@ -137,7 +161,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
+        query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes").orderByChild("title");
 
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
 
@@ -147,12 +171,51 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case MENU_SHARE:
+                mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        /*Recipe recipe = new Recipe(
+                                dataSnapshot.child("title").getValue().toString(),
+                                dataSnapshot.child("composition").getValue().toString(),
+                                dataSnapshot.child("description").getValue().toString(),
+                                dataSnapshot.child("image").getValue().toString());
+                        mRef=mDatabase.getReference().child("recipes");
+                        mRef.push().setValue(recipe);*/
+               //         Toast.makeText(getContext(),dataSnapshot.child("title").getValue().toString(),Toast.LENGTH_SHORT).show();
+                    }
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+        }
+        return super.onContextItemSelected(item);
+    }
+
+/*
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0,MENU_SHARE,0,"Share");
+        menu.add(0,MENU_DELETE,0,"Delete");
+    }
+*/
+
+
+
+    @Override
     public void onClick(View v) {
         Intent intent = new Intent(getContext(), NewRecipe.class);
         startActivity(intent);
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView myTitle, myComposition, myDescription;
         ImageView myImage;
 
@@ -163,9 +226,17 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
             myComposition = itemView.findViewById(R.id.myComposition);
             myDescription = itemView.findViewById(R.id.myDescription);
             myImage = itemView.findViewById(R.id.myImage);
+            itemView.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(0,MENU_SHARE,0,"Share");
+            menu.add(0,MENU_DELETE,0,"Delete");
         }
 
     }
+
 
     private void search(String s) {
         Query searchQuery = mRef.orderByChild("title")

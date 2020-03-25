@@ -17,7 +17,8 @@
         <activity android:name=".GlobalRecipeCard"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".NewRecipe" />
-        <activity android:name=".Authorization">
+        <activity android:name=".Authorization"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.MAIN" />

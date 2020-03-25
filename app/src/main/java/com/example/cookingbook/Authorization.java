@@ -31,10 +31,11 @@ import static android.view.View.VISIBLE;
 
 public class Authorization extends AppCompatActivity implements View.OnClickListener {
 
+    private Registration registration = new Registration();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ImageView bookIconImageView;
-    private TextView bookITextView;
+    private TextView bookITextView, signUpTextView, skipTextView;
     private ProgressBar loadingProgressBar;
     private RelativeLayout rootView, afterAnimationView;
     private EditText emailEditText, passwordEditText;
@@ -42,9 +43,7 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_authorization);
         initViews();
         new CountDownTimer(5000,1000){
@@ -76,17 +75,25 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         };
 
         findViewById(R.id.loginButton).setOnClickListener(this);
+        findViewById(R.id.signUpTextView).setOnClickListener(this);
+        findViewById(R.id.skipTextView).setOnClickListener(this);
 
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {
+        //    user.updateProfile(registration.getNickName());
             gotoMain();
         }
     }
 
     @Override
     public void onClick(View v) {
-        signIn(emailEditText.getText().toString(),passwordEditText.getText().toString());
+        switch (v.getId()){
+            case R.id.loginButton:signIn(emailEditText.getText().toString(),passwordEditText.getText().toString()); break;
+            case R.id.signUpTextView:gotoSignUp();break;
+            case R.id.skipTextView:gotoMain();
+        }
+
     }
 
     public void signIn(String email, String password) {
@@ -94,6 +101,8 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+/*                    FirebaseUser user = mAuth.getCurrentUser();
+                    user.updateProfile(registration.getNickName());*/
                     gotoMain();
                     Toast.makeText(Authorization.this, "Sign In!", Toast.LENGTH_SHORT).show();
                 } else {
@@ -103,18 +112,6 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    public void signUp(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(Authorization.this, "Sign up!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(Authorization.this, "Sign up failed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
 
     private void initViews() {
         bookIconImageView = findViewById(R.id.bookIconImageView);
@@ -124,6 +121,7 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         afterAnimationView = findViewById(R.id.afterAnimationView);
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
+        signUpTextView = findViewById(R.id.signUpTextView);
     }
 
     private void startAnimation() {
@@ -157,6 +155,11 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
 
     public void gotoMain() {
         Intent intent = new Intent(Authorization.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void gotoSignUp(){
+        Intent intent = new Intent(Authorization.this,Registration.class);
         startActivity(intent);
     }
 }

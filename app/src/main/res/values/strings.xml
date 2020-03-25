@@ -9,22 +9,30 @@
 
     <string name="menu_recipes">Рецепты</string>
     <string name="menu_myrecipes">Мои рецепты</string>
-    <string name="menu_gallery">My recipes</string>
+    <string name="menu_gallery">Мои рецепты</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Личный кабинет</string>
     <string name="menu_share">Share</string>
-    <string name="menu_info">About us</string>
+    <string name="menu_info">О нас</string>
     <string name="search_query_hint">Введите название</string>
-    <string name="ion_search">🔍</string>
+    <string name="ion_search">🔍Название рецепта</string>
+    <string name="back">Назад</string>
 
     <!-- Authorization -->
     <string name="book">BookI</string>
-    <string name="welcome_back">Welcome back!</string>
-    <string name="read_it_together">Let\'s cook it together</string>
-    <string name="skip">Skip</string>
-    <string name="login">Login</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="sign_up">Sign up</string>
-    <string name="forget_password">Forget Password?</string>
+    <string name="welcome_back">С возвращением!</string>
+    <string name="welcome">Добро пожаловать!</string>
+    <string name="cook_it_together">Приготовим это вместе</string>
+    <string name="lets_cook_together">Давайте приготовим вместе</string>
+    <string name="skip">Пропустить</string>
+    <string name="login">Логин</string>
+    <string name="email">E-mail</string>
+    <string name="password">Пароль</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="forget_password">Забыли пароль?</string>
+    <string name="registration">Зарегистрироваться</string>
+    <string name="nickname">Ник</string>
+    <string name="err_msg_name">Введите ник полностью</string>
+    <string name="err_msg_email">Введите правильную почту</string>
+    <string name="err_msg_password">Пароль не может содержать меньше 6 символов</string>
 </resources>
