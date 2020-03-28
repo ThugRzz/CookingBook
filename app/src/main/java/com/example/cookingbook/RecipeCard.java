@@ -30,22 +30,13 @@ public class RecipeCard extends AppCompatActivity {
     DatabaseReference mRef;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.card_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.share:
-                Recipe recipe = new Recipe(title,composition,description,image);
-                mRef=mDatabase.getReference().child("recipes");
-                mRef.push().setValue(recipe);
-                Toast.makeText(RecipeCard.this,"Вы поделились рецептом!",Toast.LENGTH_SHORT).show();
-            default:
-                return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -55,6 +46,9 @@ public class RecipeCard extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         mAuth=FirebaseAuth.getInstance();
         mDatabase=FirebaseDatabase.getInstance();
         image = getIntent().getExtras().getString("image");

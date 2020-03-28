@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +18,12 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -27,6 +32,8 @@ import com.squareup.picasso.Picasso;
 public class NewRecipe extends AppCompatActivity implements View.OnClickListener {
 
     public static final int REQUEST_IMAGE_GET = 1;
+
+    boolean isEqual;
     private String title;
     private String description;
     private String composition;
@@ -37,11 +44,12 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     private ImageView createImage;
     private Button createRecipeButton;
     private Uri fullPhotoURI;
+    private Recipe recipe;
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
     DatabaseReference mRef;
     private StorageReference mStorageRef;
-
+    private ValueEventListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+
     }
 
     @Override
@@ -107,31 +116,34 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
-                if (image.isEmpty()||createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
+                if (image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipe.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 title = createTitle.getText().toString();
                 composition = createComposition.getText().toString();
                 description = createDescription.getText().toString();
-                Recipe recipe = new Recipe(
-                        title,
-                        composition,
-                        description,
-                        image);
-                mRef = mDatabase.getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
-                mRef.push().setValue(recipe);
-                clearData();
 
-                Toast.makeText(NewRecipe.this, "Рецепт добавлен", Toast.LENGTH_SHORT).show();
+                isAdded(title, composition, description, image);
                 break;
             case R.id.recipePic:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                if (intent.resolveActivity(getPackageManager()) != null) {
+                if (intent.resolveActivity(
+
+                        getPackageManager()) != null) {
                     startActivityForResult(intent, REQUEST_IMAGE_GET);
                 }
                 break;
         }
+    }
+
+    public void pushRecipe(String title, String composition, String description, String image) {
+        Recipe pushRecipe = new Recipe(title, composition, description, image);
+        mRef = mDatabase.getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
+        mRef.push().setValue(pushRecipe);
+        Toast.makeText(getApplicationContext(), "Рецепт добавлен!", Toast.LENGTH_SHORT).show();
+        clearData();
     }
 
     private String generateRandomNameForImage() {
@@ -150,7 +162,33 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         createTitle.setText("");
         createComposition.setText("");
         createDescription.setText("");
-        createImage.setImageResource(0);
-        image="";
+        createImage.setImageResource(R.drawable.nophoto);
+        image = "";
     }
+
+    private void isAdded(final String title, final String composition, final String description, final String image) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
+        Query myQuery = reference.orderByChild("title").equalTo(title);
+        myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                    if (dss.child("title").getValue().toString().equals(title)) {
+                        Toast.makeText(NewRecipe.this,"Рецепт с таким названием уже существует!",Toast.LENGTH_SHORT).show();
+                        Log.d("INFO", "ALREADY ADDED");
+                        return;
+                    }
+                }
+                pushRecipe(title, composition, description, image);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }
+

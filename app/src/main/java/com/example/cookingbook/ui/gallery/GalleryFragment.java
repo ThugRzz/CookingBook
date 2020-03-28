@@ -62,8 +62,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
     private EditText editText;
     private FirebaseDatabase mDatabase;
     private String recipeID;
-    DatabaseReference ref;
-
+    private String currentTitle;
+    private DatabaseReference ref;
 
 
     @Override
@@ -91,8 +91,10 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                       String a = Integer.toString(holder.getAdapterPosition());
-                        Toast.makeText(getContext(),a,Toast.LENGTH_SHORT).show();
+                        String a = Integer.toString(holder.getAdapterPosition());
+                        currentTitle = getItem(position).getTitle();
+                    //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
+
                         return false;
                     }
                 });
@@ -106,7 +108,7 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                         recipeIntent.putExtra("title", model.getTitle());
                         recipeIntent.putExtra("composition", model.getComposition());
                         recipeIntent.putExtra("description", model.getDescription());
-                        recipeIntent.putExtra("recipe_ref",recipeID);
+                        recipeIntent.putExtra("recipe_ref", recipeID);
                         startActivity(recipeIntent);
                     }
                 });
@@ -125,6 +127,53 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         adapter.startListening();
       /*  Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
         adapter.notifyDataSetChanged();*/
+    }
+
+    private void deleteItem(final String currentTitle) {
+        Query mQuery = mRef.orderByChild("title").equalTo(currentTitle);
+        mQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                    dss.getRef().removeValue();
+                    // dss.getRef().
+                }
+                Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void shareItem(final String currentTitle) {
+        Query shareQuery = mRef.orderByChild("title").equalTo(currentTitle);
+        shareQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                    String itemID = dss.getRef().getKey();
+                    String title = dss.child("title").getValue().toString();
+                    String composition = dss.child("composition").getValue().toString();
+                    String description = dss.child("description").getValue().toString();
+                    String image = dss.child("image").getValue().toString();
+                    Recipe recipe = new Recipe(title,composition,description,image);
+                    ref=FirebaseDatabase.getInstance().getReference().child("recipes");
+                    ref.push().setValue(recipe);
+                    Toast.makeText(getContext(), "Отправлено", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -172,20 +221,22 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case MENU_SHARE:
-                mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
+                shareItem(currentTitle);
+                break;
+               /* mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        /*Recipe recipe = new Recipe(
+                        *//*Recipe recipe = new Recipe(
                                 dataSnapshot.child("title").getValue().toString(),
                                 dataSnapshot.child("composition").getValue().toString(),
                                 dataSnapshot.child("description").getValue().toString(),
                                 dataSnapshot.child("image").getValue().toString());
                         mRef=mDatabase.getReference().child("recipes");
-                        mRef.push().setValue(recipe);*/
-               //         Toast.makeText(getContext(),dataSnapshot.child("title").getValue().toString(),Toast.LENGTH_SHORT).show();
+                        mRef.push().setValue(recipe);*//*
+                        //         Toast.makeText(getContext(),dataSnapshot.child("title").getValue().toString(),Toast.LENGTH_SHORT).show();
                     }
 
 
@@ -193,7 +244,10 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                });
+                });*/
+            case MENU_DELETE:
+                deleteItem(currentTitle);
+                break;
         }
         return super.onContextItemSelected(item);
     }
@@ -206,7 +260,6 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
         menu.add(0,MENU_DELETE,0,"Delete");
     }
 */
-
 
 
     @Override
@@ -231,8 +284,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(0,MENU_SHARE,0,"Share");
-            menu.add(0,MENU_DELETE,0,"Delete");
+            menu.add(0, MENU_SHARE, 0, "Share");
+            menu.add(0, MENU_DELETE, 0, "Delete");
         }
 
     }

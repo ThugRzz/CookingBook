@@ -7,6 +7,7 @@
     android:focusableInTouchMode="true"
     android:focusable="true">
 
+
     <EditText
         android:id="@+id/awd"
         android:layout_width="match_parent"
@@ -14,6 +15,9 @@
         android:ems="10"
         android:hint="@string/ion_search"
         android:background="@drawable/shaped_edittext"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,9 +25,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myList"
-        android:layout_width="414dp"
-        android:layout_height="679dp"
-        android:layout_below="@+id/awd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/awd"
+        android:overScrollMode="never"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/awd">

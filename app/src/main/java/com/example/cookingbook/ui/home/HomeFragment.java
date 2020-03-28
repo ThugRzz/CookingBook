@@ -1,10 +1,14 @@
 package com.example.cookingbook.ui.home;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,9 +20,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookingbook.DataAdapter;
+import com.example.cookingbook.GlobalRecipeCard;
 import com.example.cookingbook.MainActivity;
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
+import com.example.cookingbook.RecipeCard;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,12 +39,19 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(getContext(), GlobalRecipeCard.class);
+        startActivity(intent);
+    }
 
+    private ArrayList<Recipe> list;
     private RecyclerView recipesRecyclerView;
     private DatabaseReference recipesRef;
     private Query query;
     private FirebaseAuth mAuth;
+    private EditText searchEditText;
 
     @Override
     public void onStart() {
@@ -59,6 +72,18 @@ public class HomeFragment extends Fragment {
                         String recipesComposition = dataSnapshot.child("composition").getValue().toString();
                         String recipesDescription = dataSnapshot.child("description").getValue().toString();
 
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent recipeIntent = new Intent(getContext(), GlobalRecipeCard.class);
+                                recipeIntent.putExtra("image", model.getImage());
+                                recipeIntent.putExtra("title", model.getTitle());
+                                recipeIntent.putExtra("composition", model.getComposition());
+                                recipeIntent.putExtra("description", model.getDescription());
+                                recipeIntent.putExtra("recipe_ref",recipeID);
+                                startActivity(recipeIntent);
+                            }
+                        });
                         holder.title.setText(recipesTitle);
                         holder.composition.setText(recipesComposition);
                         holder.description.setText(recipesDescription);
@@ -70,6 +95,7 @@ public class HomeFragment extends Fragment {
                                 .centerInside()
                                 .into(holder.image);
                     }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -97,7 +123,29 @@ public class HomeFragment extends Fragment {
 
         query= FirebaseDatabase.getInstance().getReference().child("recipes").orderByChild("title");
         recipesRef=FirebaseDatabase.getInstance().getReference().child("recipes");
+        list=new ArrayList<>();
+        searchEditText=root.findViewById(R.id.searchEditText);
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().isEmpty()) {
+                    search(s.toString());
+                } else {
+                    search("");
+
+                }
+            }
+        });
         return root;
     }
 
@@ -113,5 +161,32 @@ public class HomeFragment extends Fragment {
             description=itemView.findViewById(R.id.description);
             image=itemView.findViewById(R.id.image);
         }
+    }
+
+    private void search(String s) {
+        Query searchQuery = recipesRef.orderByChild("title")
+                .startAt(s)
+                .endAt(s + "\uf0ff");
+        searchQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    list.clear();
+                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                        final Recipe recipe = dss.getValue(Recipe.class);
+                        list.add(recipe);
+                    }
+
+                    DataAdapter myAdapter = new DataAdapter(list, getContext());
+                    recipesRecyclerView.setAdapter(myAdapter);
+                    myAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
