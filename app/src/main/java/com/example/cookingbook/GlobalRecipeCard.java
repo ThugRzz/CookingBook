@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,19 +16,29 @@ import android.widget.Toast;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class GlobalRecipeCard extends AppCompatActivity {
     private String image;
+    private String displayName;
     private String title;
     private String composition;
     private String description;
     private String recipeRef;
+    private String avatarURL;
+    private String recipesCount;
+    private String phoneNumber;
+    private String uid;
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
-    DatabaseReference mRef;
+    private DatabaseReference mRef;
+    private DatabaseReference ref;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,8 +50,42 @@ public class GlobalRecipeCard extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
+                Recipe recipe = new Recipe(title, composition, description, image);
+                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites");
+                mRef.push().setValue(recipe);
+                Toast.makeText(this, "Добавлено в избранное", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.delete:
+            case R.id.aboutAuthor:
+                if (uid.equals("0")) {
+                    Intent intent = new Intent(GlobalRecipeCard.this, UserInfo.class);
+                    intent.putExtra("dispName", "Ким Андрей");
+                    intent.putExtra("count", "Очень много=)");
+                    intent.putExtra("phone", "+79050135580");
+                    intent.putExtra("avatar", "android.resource://com.example.cookingbook/drawable/avatar");
+                    startActivity(intent);
+                } else {
+                    Query aboutAuthorQuery = ref.orderByChild("phone");
+                    aboutAuthorQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Intent intent = new Intent(GlobalRecipeCard.this, UserInfo.class);
+                            if (dataSnapshot.child("displayName").getValue() == null) {
+                                intent.putExtra("dispName", "Cooking book");
+                            } else {
+                                intent.putExtra("dispName", dataSnapshot.child("displayName").getValue().toString());
+                            }
+                            intent.putExtra("count", dataSnapshot.child("count").getValue().toString());
+                            intent.putExtra("phone", dataSnapshot.child("number").getValue().toString());
+                            intent.putExtra("avatar", dataSnapshot.child("avatar").getValue().toString());
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
                 break;
             case android.R.id.home:
                 finish();
@@ -66,8 +111,15 @@ public class GlobalRecipeCard extends AppCompatActivity {
         composition = getIntent().getExtras().getString("composition");
         description = getIntent().getExtras().getString("description");
         recipeRef = getIntent().getExtras().getString("recipe_ref");
-     //   Toast.makeText(this, recipeRef, Toast.LENGTH_SHORT).show();
+        displayName = getIntent().getExtras().getString("displayName");
+        recipesCount = getIntent().getExtras().getString("recipesCount");
+        avatarURL = getIntent().getExtras().getString("avatarURL");
+        phoneNumber = getIntent().getExtras().getString("phoneNumber");
+        uid = getIntent().getExtras().getString("uid");
+
+        //   Toast.makeText(this, recipeRef, Toast.LENGTH_SHORT).show();
         ImageView imageView = findViewById(R.id.picGlobal);
+        TextView displayNameView = findViewById(R.id.displayNameTextView);
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbarGlobal);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
@@ -80,6 +132,23 @@ public class GlobalRecipeCard extends AppCompatActivity {
                 .centerInside()
                 .into(imageView);
         collapsingToolbarLayout.setTitle(title);
+        if (uid.equals("0")) {
+            displayNameView.setText("Cooking book");
+        } else {
+            ref = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("userInfo");
+            Query query = ref.orderByChild("phone");
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    displayNameView.setText(dataSnapshot.child("displayName").getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
         compositionView.setText(composition);
         descriptionView.setText(description);
         setSupportActionBar(toolbar);

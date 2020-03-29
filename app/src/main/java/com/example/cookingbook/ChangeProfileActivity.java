@@ -20,6 +20,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -29,23 +34,45 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
     public static final int REQUEST_IMAGE_GET = 1;
     private Button changeAvatarButton,confirmButton;
-    private EditText emailET,phoneET;
-    private String email;
+    private EditText nameET,phoneET;
+    private String name;
     private Uri avatar;
     private FirebaseUser user;
     private ImageView avatarImage;
     private StorageReference mStorageRef;
+    private DatabaseReference mRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_profile);
         user= FirebaseAuth.getInstance().getCurrentUser();
-        email=getIntent().getExtras().getString("NAME");
+        name=getIntent().getExtras().getString("NAME");
+        phoneET=findViewById(R.id.changePhoneNumber);
         mStorageRef=FirebaseStorage.getInstance().getReference();
-        emailET=findViewById(R.id.changeNickname);
-        emailET.setText(email);
+        mRef= FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("userInfo");
+
+        nameET=findViewById(R.id.changeNickname);
+        nameET.setText(name);
         avatarImage=findViewById(R.id.changeAvatar);
+        Picasso.get()
+                .load(user.getPhotoUrl())
+                .placeholder(R.drawable.defaultimage)
+                .fit()
+                .centerCrop()
+                .into(avatarImage);
+        avatar=user.getPhotoUrl();
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                phoneET.setText(dataSnapshot.child("number").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         changeAvatarButton=findViewById(R.id.changeAvatarButton);
         changeAvatarButton.setOnClickListener(this);
         confirmButton=findViewById(R.id.confirmButton);
@@ -120,9 +147,21 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
                 break;
             case R.id.confirmButton:
                 UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(emailET.getText().toString())
+                        .setDisplayName(nameET.getText().toString())
                         .setPhotoUri(avatar).build();
                 user.updateProfile(changeRequest);
+                mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        dataSnapshot.getRef().child("number").setValue(phoneET.getText().toString());
+                        dataSnapshot.getRef().child("displayName").setValue(nameET.getText().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 Toast.makeText(this,"Данные успешно изменены!",Toast.LENGTH_SHORT).show();
                 break;
         }

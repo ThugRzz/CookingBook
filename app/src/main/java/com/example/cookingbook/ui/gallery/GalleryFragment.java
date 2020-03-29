@@ -91,9 +91,8 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        String a = Integer.toString(holder.getAdapterPosition());
                         currentTitle = getItem(position).getTitle();
-                    //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
 
                         return false;
                     }
@@ -155,15 +154,29 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dss : dataSnapshot.getChildren()) {
-                    String itemID = dss.getRef().getKey();
                     String title = dss.child("title").getValue().toString();
                     String composition = dss.child("composition").getValue().toString();
                     String description = dss.child("description").getValue().toString();
                     String image = dss.child("image").getValue().toString();
-                    Recipe recipe = new Recipe(title,composition,description,image);
-                    ref=FirebaseDatabase.getInstance().getReference().child("recipes");
-                    ref.push().setValue(recipe);
-                    Toast.makeText(getContext(), "Отправлено", Toast.LENGTH_SHORT).show();
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("userInfo");
+                    Query infoQuery = databaseReference.orderByChild("phone");
+                    infoQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String uid = dataSnapshot.child("uid").getValue().toString();
+                            Recipe recipe = new Recipe(title, composition, description, image,uid);
+                            ref = FirebaseDatabase.getInstance().getReference().child("recipes");
+                            ref.push().setValue(recipe);
+                            Toast.makeText(getContext(), "Отправлено", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
 
                 }
 
@@ -225,26 +238,6 @@ public class GalleryFragment extends Fragment implements View.OnClickListener {
             case MENU_SHARE:
                 shareItem(currentTitle);
                 break;
-               /* mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        *//*Recipe recipe = new Recipe(
-                                dataSnapshot.child("title").getValue().toString(),
-                                dataSnapshot.child("composition").getValue().toString(),
-                                dataSnapshot.child("description").getValue().toString(),
-                                dataSnapshot.child("image").getValue().toString());
-                        mRef=mDatabase.getReference().child("recipes");
-                        mRef.push().setValue(recipe);*//*
-                        //         Toast.makeText(getContext(),dataSnapshot.child("title").getValue().toString(),Toast.LENGTH_SHORT).show();
-                    }
-
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
             case MENU_DELETE:
                 deleteItem(currentTitle);
                 break;

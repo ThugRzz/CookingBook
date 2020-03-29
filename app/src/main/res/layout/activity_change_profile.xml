@@ -20,6 +20,15 @@
             android:layout_marginEnd="5dp"
             android:hint="Введите псевдоним" />
 
+        <EditText
+            android:id="@+id/changePhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:hint="Введите номер телефона"/>
+
 
         <ImageView
             android:id="@+id/changeAvatar"

@@ -47,17 +47,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class SlideshowFragment extends Fragment implements View.OnClickListener {
+public class SlideshowFragment extends Fragment {
 
-    final int MENU_DELETE = 2;
+    private final int MENU_DELETE = 2;
 
-    private FloatingActionButton addNewRecipe;
-    private RecyclerView recipeList;
+
+    private RecyclerView favoriteList;
     private DatabaseReference mRef;
     private Query query;
     private FirebaseAuth mAuth;
     private ArrayList<Recipe> list;
-    private EditText editText;
     private String recipeID;
     private String currentTitle;
     private DatabaseReference ref;
@@ -70,19 +69,19 @@ public class SlideshowFragment extends Fragment implements View.OnClickListener 
                 .setQuery(query, Recipe.class)
                 .build();
 
-        FirebaseRecyclerAdapter<Recipe, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, MyViewHolder>(options) {
+        FirebaseRecyclerAdapter<Recipe, FavoriteViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, FavoriteViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Recipe model) {
+            protected void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position, @NonNull Recipe model) {
                 recipeID = getRef(position).getKey();
-                holder.myTitle.setText(model.getTitle());
-                holder.myComposition.setText(model.getComposition());
-                holder.myDescription.setText(model.getDescription());
+                holder.favoriteTitle.setText(model.getTitle());
+                holder.favoriteComposition.setText(model.getComposition());
+                holder.favoriteDescription.setText(model.getDescription());
                 Picasso.get()
                         .load(Uri.parse(model.getImage()))
                         .placeholder(R.drawable.defaultimage)
                         .fit()
                         .centerInside()
-                        .into(holder.myImage);
+                        .into(holder.favoriteImage);
 
 
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -114,13 +113,13 @@ public class SlideshowFragment extends Fragment implements View.OnClickListener 
 
             @NonNull
             @Override
-            public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_item, parent, false);
-                return new MyViewHolder(view);
+            public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorites_list_item, parent, false);
+                return new FavoriteViewHolder(view);
             }
         };
 
-        recipeList.setAdapter(adapter);
+        favoriteList.setAdapter(adapter);
         adapter.startListening();
       /*  Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
         adapter.notifyDataSetChanged();*/
@@ -149,69 +148,27 @@ public class SlideshowFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        recipeList = root.findViewById(R.id.myList);
+        View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        favoriteList = root.findViewById(R.id.TEMP);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recipeList.setLayoutManager(layoutManager);
-        registerForContextMenu(recipeList);
+        favoriteList.setLayoutManager(layoutManager);
+        registerForContextMenu(favoriteList);
         mAuth = FirebaseAuth.getInstance();
         String currentUid = mAuth.getUid();
         list = new ArrayList<>();
-        editText = root.findViewById(R.id.awd);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!s.toString().isEmpty()) {
-                    search(s.toString());
-                } else {
-                    search("");
-
-                }
-            }
-        });
 
         query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites").orderByChild("title");
 
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites");
-
-        addNewRecipe = root.findViewById(R.id.newRecipe);
-        addNewRecipe.setOnClickListener(this);
+        
         return root;
     }
+
+
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-               /* mRef.child(recipeID).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        *//*Recipe recipe = new Recipe(
-                                dataSnapshot.child("title").getValue().toString(),
-                                dataSnapshot.child("composition").getValue().toString(),
-                                dataSnapshot.child("description").getValue().toString(),
-                                dataSnapshot.child("image").getValue().toString());
-                        mRef=mDatabase.getReference().child("recipes");
-                        mRef.push().setValue(recipe);*//*
-                        //         Toast.makeText(getContext(),dataSnapshot.child("title").getValue().toString(),Toast.LENGTH_SHORT).show();
-                    }
-
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
             case MENU_DELETE:
                 deleteItem(currentTitle);
                 break;
@@ -229,23 +186,17 @@ public class SlideshowFragment extends Fragment implements View.OnClickListener 
 */
 
 
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(getContext(), NewRecipe.class);
-        startActivity(intent);
-    }
-
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        TextView myTitle, myComposition, myDescription;
-        ImageView myImage;
+    public class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        TextView favoriteTitle, favoriteComposition, favoriteDescription;
+        ImageView favoriteImage;
 
 
-        public MyViewHolder(@NonNull View itemView) {
+        public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
-            myTitle = itemView.findViewById(R.id.myTitle);
-            myComposition = itemView.findViewById(R.id.myComposition);
-            myDescription = itemView.findViewById(R.id.myDescription);
-            myImage = itemView.findViewById(R.id.myImage);
+            favoriteTitle = itemView.findViewById(R.id.favoriteTitle);
+            favoriteComposition = itemView.findViewById(R.id.favoriteComposition);
+            favoriteDescription = itemView.findViewById(R.id.favoriteDescription);
+            favoriteImage = itemView.findViewById(R.id.favoriteImage);
             itemView.setOnCreateContextMenuListener(this);
         }
 
@@ -256,32 +207,5 @@ public class SlideshowFragment extends Fragment implements View.OnClickListener 
 
     }
 
-
-    private void search(String s) {
-        Query searchQuery = mRef.orderByChild("title")
-                .startAt(s)
-                .endAt(s + "\uf0ff");
-        searchQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    list.clear();
-                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
-                        final Recipe recipe = dss.getValue(Recipe.class);
-                        list.add(recipe);
-                    }
-
-                    DataAdapter myAdapter = new DataAdapter(list, getContext());
-                    recipeList.setAdapter(myAdapter);
-                    myAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
 
 }

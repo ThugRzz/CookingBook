@@ -45,11 +45,12 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     private Button createRecipeButton;
     private Uri fullPhotoURI;
     private Recipe recipe;
-    FirebaseAuth mAuth;
-    FirebaseDatabase mDatabase;
-    DatabaseReference mRef;
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mRef;
     private StorageReference mStorageRef;
     private ValueEventListener listener;
+    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +126,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
                 description = createDescription.getText().toString();
 
                 isAdded(title, composition, description, image);
+
                 break;
             case R.id.recipePic:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -174,12 +176,14 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dss : dataSnapshot.getChildren()) {
                     if (dss.child("title").getValue().toString().equals(title)) {
-                        Toast.makeText(NewRecipe.this,"Рецепт с таким названием уже существует!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewRecipe.this, "Рецепт с таким названием уже существует!", Toast.LENGTH_SHORT).show();
                         Log.d("INFO", "ALREADY ADDED");
                         return;
                     }
                 }
+
                 pushRecipe(title, composition, description, image);
+
 
             }
 
