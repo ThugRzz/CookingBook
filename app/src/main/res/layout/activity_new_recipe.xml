@@ -17,7 +17,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="Создать рецепт"></androidx.appcompat.widget.Toolbar>
+            app:title="Создать рецепт" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Title"
+                    android:hint="Название"
                     android:inputType="textMultiLine|textCapSentences"
                     android:paddingLeft="10dp"
                     android:singleLine="false" />
@@ -58,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Composition"
+                    android:hint="Ингредиенты"
                     android:inputType="textMultiLine|textCapSentences"
                     android:paddingLeft="10dp"
                     android:singleLine="false" />
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Description"
+                    android:hint="Описание"
                     android:inputType="textMultiLine|textCapSentences"
                     android:paddingLeft="10dp"
                     android:singleLine="false" />
