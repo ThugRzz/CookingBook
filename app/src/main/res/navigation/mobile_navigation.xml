@@ -3,41 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_recipes">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.example.cookingbook.ui.home.HomeFragment"
+        android:id="@+id/nav_recipes"
+        android:name="com.example.cookingbook.ui.Recipes.RecipesFragment"
         android:label="@string/menu_recipes"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_recipes" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.cookingbook.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_my_recipes"
+        android:name="com.example.cookingbook.ui.MyRecipes.MyRecipesFragment"
+        android:label="@string/menu_myRecipes"
+        tools:layout="@layout/fragment_my_recipes" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.cookingbook.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_favorites_recipes"
+        android:name="com.example.cookingbook.ui.FavoritesRecipes.FavoritesRecipesFragment"
+        android:label="@string/menu_favoritesRecipes"
+        tools:layout="@layout/fragment_favorites_recipes" />
 
     <fragment
-        android:id="@+id/nav_tools"
-        android:name="com.example.cookingbook.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
+        android:id="@+id/nav_personal_cabinet"
+        android:name="com.example.cookingbook.ui.PersonalCabinet.PersonalCabinetFragment"
+        android:label="@string/menu_personalCabinet"
+        tools:layout="@layout/fragment_personal_cabinet" />
 
     <fragment
-        android:id="@+id/nav_share"
-        android:name="com.example.cookingbook.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
-
-    <fragment
-        android:id="@+id/nav_send"
-        android:name="com.example.cookingbook.ui.send.SendFragment"
+        android:id="@+id/nav_about_us"
+        android:name="com.example.cookingbook.ui.AboutUs.AboutUsFragment"
         android:label="@string/menu_info"
-        tools:layout="@layout/fragment_send" />
+        tools:layout="@layout/fragment_about_us" />
 </navigation>

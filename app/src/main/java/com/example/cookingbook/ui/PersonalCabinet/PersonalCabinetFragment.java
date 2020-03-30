@@ -1,31 +1,28 @@
-package com.example.cookingbook.ui.tools;
+package com.example.cookingbook.ui.PersonalCabinet;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cookingbook.Authorization;
 import com.example.cookingbook.ChangeProfileActivity;
 import com.example.cookingbook.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,25 +31,90 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ToolsFragment extends Fragment implements View.OnClickListener {
+public class PersonalCabinetFragment extends Fragment{
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
 
     final static String NAME = "NAME";
-    private String count="adwa";
+    private String count;
     private FirebaseAuth mAuth;
     private TextView emailTextView, nicknameTextView, counterTextView,phoneTextView;
     private TextView nickName;
-    private ToolsViewModel toolsViewModel;
     private Button signOutButton, changeProfileButton;
     private FirebaseUser user;
     private ImageView avatarImageView;
     private DatabaseReference mRef;
 
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.cabinet_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.changeProfile:
+                Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
+                changeProfileIntent.putExtra(NAME, mAuth.getCurrentUser().getDisplayName());
+                startActivity(changeProfileIntent);
+                break;
+            case R.id.LogOut:
+                mAuth.signOut();
+                Intent intent = new Intent(getContext(), Authorization.class);
+                startActivity(intent);
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        emailTextView.setText(mAuth.getCurrentUser().getEmail());
+        nicknameTextView.setText(mAuth.getCurrentUser().getDisplayName());
+        Picasso.get()
+                .load(mAuth.getCurrentUser().getPhotoUrl())
+                .placeholder(R.drawable.defaultimage)
+                .fit()
+                .centerInside()
+                .into(avatarImageView);
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView textView = headerView.findViewById(R.id.textView);
+        TextView textView1 = headerView.findViewById(R.id.login);
+        ImageView avatarImage = headerView.findViewById(R.id.imageView);
+        mAuth=FirebaseAuth.getInstance();
+        textView.setText(mAuth.getCurrentUser().getEmail());
+        textView1.setText(mAuth.getCurrentUser().getDisplayName());
+        Picasso.get()
+                .load(mAuth.getCurrentUser().getPhotoUrl())
+                .placeholder(R.drawable.defaultimage)
+                .fit()
+                .centerInside()
+                .into(avatarImage);
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("number").getValue()==null){}
+                else {
+                    phoneTextView.setText(dataSnapshot.child("number").getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_tools, container, false);
+        View root = inflater.inflate(R.layout.fragment_personal_cabinet, container, false);
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         CollapsingToolbarLayout collapsingToolbarLayout = root.findViewById(R.id.collapsingToolbarCabinet);
@@ -66,7 +128,10 @@ public class ToolsFragment extends Fragment implements View.OnClickListener {
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               phoneTextView.setText(dataSnapshot.child("number").getValue().toString());
+                if(dataSnapshot.child("number").getValue()==null){}
+                else {
+                    phoneTextView.setText(dataSnapshot.child("number").getValue().toString());
+                }
             }
 
             @Override
@@ -89,10 +154,7 @@ public class ToolsFragment extends Fragment implements View.OnClickListener {
                 .fit()
                 .centerInside()
                 .into(avatarImageView);
-        signOutButton = root.findViewById(R.id.signOutButton);
-        changeProfileButton = root.findViewById(R.id.changeProfileButton);
-        signOutButton.setOnClickListener(this);
-        changeProfileButton.setOnClickListener(this);
+
 
         return root;
     }
@@ -117,6 +179,7 @@ public class ToolsFragment extends Fragment implements View.OnClickListener {
                             dataSnapshot.getRef().child("avatar").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
                         }
                         dataSnapshot.getRef().child("uid").setValue(mAuth.getCurrentUser().getUid());
+                        dataSnapshot.getRef().child("email").setValue(mAuth.getCurrentUser().getEmail());
                     }
 
                     @Override
@@ -135,20 +198,4 @@ public class ToolsFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.signOutButton:
-                mAuth.signOut();
-                Intent intent = new Intent(getContext(), Authorization.class);
-                startActivity(intent);
-                break;
-            case R.id.changeProfileButton:
-                Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
-                changeProfileIntent.putExtra(NAME, mAuth.getCurrentUser().getDisplayName());
-                startActivity(changeProfileIntent);
-                break;
-        }
-
-    }
 }

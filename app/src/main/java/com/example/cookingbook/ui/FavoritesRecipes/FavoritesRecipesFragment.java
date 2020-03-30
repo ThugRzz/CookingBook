@@ -1,39 +1,27 @@
-package com.example.cookingbook.ui.slideshow;
+package com.example.cookingbook.ui.FavoritesRecipes;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.Filter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cookingbook.DataAdapter;
-import com.example.cookingbook.NewRecipe;
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
 import com.example.cookingbook.RecipeCard;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,10 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
-public class SlideshowFragment extends Fragment {
+public class FavoritesRecipesFragment extends Fragment {
 
     private final int MENU_DELETE = 2;
 
@@ -75,7 +61,6 @@ public class SlideshowFragment extends Fragment {
                 recipeID = getRef(position).getKey();
                 holder.favoriteTitle.setText(model.getTitle());
                 holder.favoriteComposition.setText(model.getComposition());
-                holder.favoriteDescription.setText(model.getDescription());
                 Picasso.get()
                         .load(Uri.parse(model.getImage()))
                         .placeholder(R.drawable.defaultimage)
@@ -148,19 +133,18 @@ public class SlideshowFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        View root = inflater.inflate(R.layout.fragment_favorites_recipes, container, false);
         favoriteList = root.findViewById(R.id.TEMP);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         favoriteList.setLayoutManager(layoutManager);
         registerForContextMenu(favoriteList);
         mAuth = FirebaseAuth.getInstance();
-        String currentUid = mAuth.getUid();
         list = new ArrayList<>();
 
         query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites").orderByChild("title");
 
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites");
-        
+
         return root;
     }
 
@@ -195,7 +179,6 @@ public class SlideshowFragment extends Fragment {
             super(itemView);
             favoriteTitle = itemView.findViewById(R.id.favoriteTitle);
             favoriteComposition = itemView.findViewById(R.id.favoriteComposition);
-            favoriteDescription = itemView.findViewById(R.id.favoriteDescription);
             favoriteImage = itemView.findViewById(R.id.favoriteImage);
             itemView.setOnCreateContextMenuListener(this);
         }

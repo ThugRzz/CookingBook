@@ -8,29 +8,26 @@
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:scaleType="centerCrop"
-        android:layout_width="100dp"
-        android:layout_height="100dp" />
+        android:layout_width="130dp"
+        android:layout_height="130dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="97dp"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/favoriteTitle"
             android:textStyle="bold"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/favoriteComposition"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/favoriteDescription"/>
+            android:layout_height="wrap_content" />
+
 
     </LinearLayout>
 </LinearLayout>

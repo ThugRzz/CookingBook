@@ -8,11 +8,9 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_recipes">Рецепты</string>
-    <string name="menu_myrecipes">Мои рецепты</string>
-    <string name="menu_gallery">Мои рецепты</string>
-    <string name="menu_slideshow">Избранное</string>
-    <string name="menu_tools">Личный кабинет</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_myRecipes">Мои рецепты</string>
+    <string name="menu_favoritesRecipes">Избранное</string>
+    <string name="menu_personalCabinet">Личный кабинет</string>
     <string name="menu_info">О нас</string>
     <string name="search_query_hint">Введите название</string>
     <string name="ion_search">🔍Название рецепта</string>

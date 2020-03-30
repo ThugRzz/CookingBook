@@ -2,12 +2,15 @@ package com.example.cookingbook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,19 +54,37 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     private StorageReference mStorageRef;
     private ValueEventListener listener;
     private DatabaseReference ref;
+    private Button changeImageButton;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarNewRecipe);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         createComposition = findViewById(R.id.Composition);
         createDescription = findViewById(R.id.Description);
         createTitle = findViewById(R.id.Title);
         createImage = findViewById(R.id.recipePic);
+        changeImageButton=findViewById(R.id.changeImageButton);
         createRecipeButton = findViewById(R.id.confirm);
         createRecipeButton.setOnClickListener(this);
-        createImage.setOnClickListener(this);
+        changeImageButton.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
@@ -117,7 +138,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
-                if (image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
+                if (image==null||image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipe.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -128,7 +149,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
                 isAdded(title, composition, description, image);
 
                 break;
-            case R.id.recipePic:
+            case R.id.changeImageButton:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 if (intent.resolveActivity(

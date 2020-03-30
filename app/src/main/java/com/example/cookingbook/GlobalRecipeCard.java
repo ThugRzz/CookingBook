@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso;
 
 public class GlobalRecipeCard extends AppCompatActivity {
     private String image;
+    private String email;
     private String displayName;
     private String title;
     private String composition;
@@ -39,6 +40,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
     FirebaseDatabase mDatabase;
     private DatabaseReference mRef;
     private DatabaseReference ref;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,6 +64,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
                     intent.putExtra("count", "Очень много=)");
                     intent.putExtra("phone", "+79050135580");
                     intent.putExtra("avatar", "android.resource://com.example.cookingbook/drawable/avatar");
+                    intent.putExtra("email","kummu-97@mail.ru");
                     startActivity(intent);
                 } else {
                     Query aboutAuthorQuery = ref.orderByChild("phone");
@@ -74,9 +77,27 @@ public class GlobalRecipeCard extends AppCompatActivity {
                             } else {
                                 intent.putExtra("dispName", dataSnapshot.child("displayName").getValue().toString());
                             }
-                            intent.putExtra("count", dataSnapshot.child("count").getValue().toString());
-                            intent.putExtra("phone", dataSnapshot.child("number").getValue().toString());
-                            intent.putExtra("avatar", dataSnapshot.child("avatar").getValue().toString());
+                            if(dataSnapshot.child("count").getValue()==null){
+                                Toast.makeText(getApplicationContext(),"Пользователь не удален или не существует",Toast.LENGTH_SHORT).show();
+                            }else {
+                                intent.putExtra("count", dataSnapshot.child("count").getValue().toString());
+                            }
+                            if(dataSnapshot.child("email").getValue()==null){
+                                Toast.makeText(getApplicationContext(),"Пользователь не удален или не существует",Toast.LENGTH_SHORT).show();
+                            }else {
+                                intent.putExtra("email", dataSnapshot.child("email").getValue().toString());
+                            }
+                            if(dataSnapshot.child("number").getValue()==null){
+                                intent.putExtra("phone","");
+                            }
+                            else {
+                                intent.putExtra("phone", dataSnapshot.child("number").getValue().toString());
+                            }
+                            if(dataSnapshot.child("avatar").getValue()==null){
+                                Toast.makeText(getApplicationContext(),"Пользователь не удален или не существует",Toast.LENGTH_SHORT).show();
+                            }else {
+                                intent.putExtra("avatar", dataSnapshot.child("avatar").getValue().toString());
+                            }
                             startActivity(intent);
                         }
 
@@ -115,6 +136,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
         recipesCount = getIntent().getExtras().getString("recipesCount");
         avatarURL = getIntent().getExtras().getString("avatarURL");
         phoneNumber = getIntent().getExtras().getString("phoneNumber");
+        email=getIntent().getExtras().getString("email");
         uid = getIntent().getExtras().getString("uid");
 
         //   Toast.makeText(this, recipeRef, Toast.LENGTH_SHORT).show();
@@ -140,7 +162,11 @@ public class GlobalRecipeCard extends AppCompatActivity {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    displayNameView.setText(dataSnapshot.child("displayName").getValue().toString());
+                    if(dataSnapshot.child("displayName").getValue()==null){
+                        displayNameView.setText("none");
+                    }else {
+                        displayNameView.setText(dataSnapshot.child("displayName").getValue().toString());
+                    }
                 }
 
                 @Override

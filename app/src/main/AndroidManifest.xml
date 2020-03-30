@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.cookingbook">
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,9 +39,6 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <provider
-            android:name=".MySuggestionProvider"
-            android:authorities="com.example.MySuggestionProvider" />
     </application>
 
 </manifest>

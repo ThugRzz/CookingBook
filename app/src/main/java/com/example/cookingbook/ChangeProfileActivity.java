@@ -2,18 +2,20 @@ package com.example.cookingbook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.cookingbook.ui.tools.ToolsFragment;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +33,15 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 public class ChangeProfileActivity extends AppCompatActivity implements View.OnClickListener {
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public static final int REQUEST_IMAGE_GET = 1;
     private Button changeAvatarButton,confirmButton;
@@ -41,11 +52,18 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
     private ImageView avatarImage;
     private StorageReference mStorageRef;
     private DatabaseReference mRef;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_profile);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarChangeProfile);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         user= FirebaseAuth.getInstance().getCurrentUser();
         name=getIntent().getExtras().getString("NAME");
         phoneET=findViewById(R.id.changePhoneNumber);
@@ -65,7 +83,10 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                phoneET.setText(dataSnapshot.child("number").getValue().toString());
+                if(dataSnapshot.child("number").getValue()==null){}
+                else {
+                    phoneET.setText(dataSnapshot.child("number").getValue().toString());
+                }
             }
 
             @Override
@@ -155,6 +176,7 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         dataSnapshot.getRef().child("number").setValue(phoneET.getText().toString());
                         dataSnapshot.getRef().child("displayName").setValue(nameET.getText().toString());
+                        dataSnapshot.getRef().child("avatar").setValue(avatar.toString());
                     }
 
                     @Override

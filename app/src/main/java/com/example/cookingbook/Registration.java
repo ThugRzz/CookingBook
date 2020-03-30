@@ -64,6 +64,7 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
             }
         }.start();
 
+        mAuth=FirebaseAuth.getInstance();
         emailEditText.addTextChangedListener(new MyTextWatcher(emailEditText));
         nickEditText.addTextChangedListener(new MyTextWatcher(nickEditText));
         passwordEditText.addTextChangedListener(new MyTextWatcher(passwordEditText));
