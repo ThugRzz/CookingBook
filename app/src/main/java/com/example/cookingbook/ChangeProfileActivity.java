@@ -33,26 +33,26 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 public class ChangeProfileActivity extends AppCompatActivity implements View.OnClickListener {
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public static final int REQUEST_IMAGE_GET = 1;
-    private Button changeAvatarButton,confirmButton;
-    private EditText nameET,phoneET;
+    private Button changeAvatarButton, confirmButton;
+    private EditText nameET, phoneET;
     private String name;
     private Uri avatar;
     private FirebaseUser user;
     private ImageView avatarImage;
     private StorageReference mStorageRef;
     private DatabaseReference mRef;
-    private FirebaseAuth mAuth;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,27 +64,26 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
         assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        user= FirebaseAuth.getInstance().getCurrentUser();
-        name=getIntent().getExtras().getString("NAME");
-        phoneET=findViewById(R.id.changePhoneNumber);
-        mStorageRef=FirebaseStorage.getInstance().getReference();
-        mRef= FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("userInfo");
-
-        nameET=findViewById(R.id.changeNickname);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        name = getIntent().getExtras().getString("NAME");
+        phoneET = findViewById(R.id.changePhoneNumber);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("userInfo");
+        nameET = findViewById(R.id.changeNickname);
         nameET.setText(name);
-        avatarImage=findViewById(R.id.changeAvatar);
+        avatarImage = findViewById(R.id.changeAvatar);
         Picasso.get()
                 .load(user.getPhotoUrl())
                 .placeholder(R.drawable.defaultimage)
                 .fit()
                 .centerCrop()
                 .into(avatarImage);
-        avatar=user.getPhotoUrl();
+        avatar = user.getPhotoUrl();
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("number").getValue()==null){}
-                else {
+                if (dataSnapshot.child("number").getValue() == null) {
+                } else {
                     phoneET.setText(dataSnapshot.child("number").getValue().toString());
                 }
             }
@@ -94,9 +93,9 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
             }
         });
-        changeAvatarButton=findViewById(R.id.changeAvatarButton);
+        changeAvatarButton = findViewById(R.id.changeAvatarButton);
         changeAvatarButton.setOnClickListener(this);
-        confirmButton=findViewById(R.id.confirmButton);
+        confirmButton = findViewById(R.id.confirmButton);
         confirmButton.setOnClickListener(this);
     }
 
@@ -148,20 +147,19 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
         int count = 10 + (int) (Math.random() * 30);
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             randString.append(symbols.charAt((int) (Math.random() * symbols.length())));
-
+        }
         return randString.toString();
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.changeAvatarButton:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 if (intent.resolveActivity(
-
                         getPackageManager()) != null) {
                     startActivityForResult(intent, REQUEST_IMAGE_GET);
                 }
@@ -184,7 +182,7 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
                     }
                 });
-                Toast.makeText(this,"Данные успешно изменены!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Данные успешно изменены!", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

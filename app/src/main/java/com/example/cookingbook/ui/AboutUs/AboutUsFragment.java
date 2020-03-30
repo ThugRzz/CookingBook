@@ -35,7 +35,7 @@ public class AboutUsFragment extends Fragment {
             }
         });
         TextView infoText= root.findViewById(R.id.text_send);
-        infoText.setText("Cooking book ver. 1.0");
+        infoText.setText("Cooking book ver 1.0");
         return root;
     }
 

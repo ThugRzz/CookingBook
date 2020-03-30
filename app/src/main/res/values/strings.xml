@@ -14,7 +14,7 @@
     <string name="menu_info">О нас</string>
     <string name="search_query_hint">Введите название</string>
     <string name="ion_search">🔍Название рецепта</string>
-    <string name="back">Назад</string>
+    <string name="back">Авторизоваться</string>
 
     <!-- Authorization -->
     <string name="book">BookI</string>
@@ -22,7 +22,7 @@
     <string name="welcome">Добро пожаловать!</string>
     <string name="cook_it_together">Приготовим это вместе</string>
     <string name="lets_cook_together">Давайте приготовим вместе</string>
-    <string name="skip">Пропустить</string>
+    <string name="skip">Выйти</string>
     <string name="login">Логин</string>
     <string name="email">E-mail</string>
     <string name="password">Пароль</string>

@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +21,6 @@ import com.example.cookingbook.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,22 +29,19 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-public class PersonalCabinetFragment extends Fragment{
+public class PersonalCabinetFragment extends Fragment {
+    private final static String NAME = "NAME";
+    private String count;
+    private FirebaseAuth mAuth;
+    private TextView emailTextView, nicknameTextView, counterTextView, phoneTextView;
+    private ImageView avatarImageView;
+    private DatabaseReference mRef;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
     }
-
-    final static String NAME = "NAME";
-    private String count;
-    private FirebaseAuth mAuth;
-    private TextView emailTextView, nicknameTextView, counterTextView,phoneTextView;
-    private TextView nickName;
-    private Button signOutButton, changeProfileButton;
-    private FirebaseUser user;
-    private ImageView avatarImageView;
-    private DatabaseReference mRef;
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.cabinet_menu, menu);
@@ -55,7 +50,7 @@ public class PersonalCabinetFragment extends Fragment{
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.changeProfile:
                 Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
                 changeProfileIntent.putExtra(NAME, mAuth.getCurrentUser().getDisplayName());
@@ -66,7 +61,6 @@ public class PersonalCabinetFragment extends Fragment{
                 Intent intent = new Intent(getContext(), Authorization.class);
                 startActivity(intent);
                 break;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -87,7 +81,7 @@ public class PersonalCabinetFragment extends Fragment{
         TextView textView = headerView.findViewById(R.id.textView);
         TextView textView1 = headerView.findViewById(R.id.login);
         ImageView avatarImage = headerView.findViewById(R.id.imageView);
-        mAuth=FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         textView.setText(mAuth.getCurrentUser().getEmail());
         textView1.setText(mAuth.getCurrentUser().getDisplayName());
         Picasso.get()
@@ -99,15 +93,14 @@ public class PersonalCabinetFragment extends Fragment{
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("number").getValue()==null){}
-                else {
+                if (dataSnapshot.child("number").getValue() == null) {
+                } else {
                     phoneTextView.setText(dataSnapshot.child("number").getValue().toString());
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -116,20 +109,16 @@ public class PersonalCabinetFragment extends Fragment{
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_personal_cabinet, container, false);
         mAuth = FirebaseAuth.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
         CollapsingToolbarLayout collapsingToolbarLayout = root.findViewById(R.id.collapsingToolbarCabinet);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
-        phoneTextView=root.findViewById(R.id.phTextView);
-//        UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName("ThugRzz").build();
-//        user.updateProfile(changeRequest);
-
-        mRef=FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("userInfo");
+        phoneTextView = root.findViewById(R.id.phTextView);
+        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("userInfo");
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("number").getValue()==null){}
-                else {
+                if (dataSnapshot.child("number").getValue() == null) {
+                } else {
                     phoneTextView.setText(dataSnapshot.child("number").getValue().toString());
                 }
             }
@@ -139,12 +128,10 @@ public class PersonalCabinetFragment extends Fragment{
 
             }
         });
-
         getRecipesCount();
         emailTextView = root.findViewById(R.id.emailTextView);
         avatarImageView = root.findViewById(R.id.avatar);
         counterTextView = root.findViewById(R.id.counterTextView);
-     //   counterTextView.setText(count);
         emailTextView.setText(mAuth.getCurrentUser().getEmail());
         nicknameTextView = root.findViewById(R.id.nicknameTextView);
         nicknameTextView.setText(mAuth.getCurrentUser().getDisplayName());
@@ -154,8 +141,6 @@ public class PersonalCabinetFragment extends Fragment{
                 .fit()
                 .centerInside()
                 .into(avatarImageView);
-
-
         return root;
     }
 
@@ -173,9 +158,9 @@ public class PersonalCabinetFragment extends Fragment{
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         dataSnapshot.getRef().child("count").setValue(count);
                         dataSnapshot.getRef().child("displayName").setValue(mAuth.getCurrentUser().getDisplayName());
-                        if(mAuth.getCurrentUser().getPhotoUrl()==null){
+                        if (mAuth.getCurrentUser().getPhotoUrl() == null) {
                             dataSnapshot.getRef().child("avatar").setValue(R.drawable.nophoto);
-                        }else {
+                        } else {
                             dataSnapshot.getRef().child("avatar").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
                         }
                         dataSnapshot.getRef().child("uid").setValue(mAuth.getCurrentUser().getUid());
@@ -187,7 +172,6 @@ public class PersonalCabinetFragment extends Fragment{
 
                     }
                 });
-          //      Toast.makeText(getContext(),count,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -195,7 +179,5 @@ public class PersonalCabinetFragment extends Fragment{
 
             }
         });
-
     }
-
 }

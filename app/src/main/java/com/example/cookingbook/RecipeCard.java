@@ -12,11 +12,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.firebase.auth.FirebaseAuth;
 
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 public class RecipeCard extends AppCompatActivity {
@@ -24,9 +21,6 @@ public class RecipeCard extends AppCompatActivity {
     private String title;
     private String composition;
     private String description;
-    private String recipeRef;
-    FirebaseAuth mAuth;
-    FirebaseDatabase mDatabase;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -48,13 +42,10 @@ public class RecipeCard extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
         image = getIntent().getExtras().getString("image");
         title = getIntent().getExtras().getString("title");
         composition = getIntent().getExtras().getString("composition");
         description = getIntent().getExtras().getString("description");
-        recipeRef = getIntent().getExtras().getString("recipe_ref");
         ImageView imageView = findViewById(R.id.pic);
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);

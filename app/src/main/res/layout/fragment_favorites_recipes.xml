@@ -7,17 +7,12 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-    <EditText
-        android:id="@+id/EDW"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/TEMP"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
         android:overScrollMode="never"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"

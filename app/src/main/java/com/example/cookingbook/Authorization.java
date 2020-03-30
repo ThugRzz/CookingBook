@@ -11,11 +11,14 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
-import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,18 +32,16 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class Authorization extends AppCompatActivity implements View.OnClickListener {
 
-    private Registration registration = new Registration();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ImageView bookIconImageView;
-    private TextView bookITextView, signUpTextView, skipTextView;
+    private TextView bookITextView;
     private ProgressBar loadingProgressBar;
     private RelativeLayout rootView, afterAnimationView;
     private TextInputLayout mailInputLayout, passInputLayout;
@@ -49,10 +50,9 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_authorization);
         initViews();
-        new CountDownTimer(5000,1000){
+        new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 bookITextView.setVisibility(GONE);
@@ -79,28 +79,41 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
                 }
             }
         };
-
         emailEditText.addTextChangedListener(new MyTextWatcher(emailEditText));
         passwordEditText.addTextChangedListener(new MyTextWatcher(passwordEditText));
+        CheckBox eyeCheckbox = findViewById(R.id.authCheckbox);
+        eyeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }else{
 
+                    passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
         findViewById(R.id.loginButton).setOnClickListener(this);
         findViewById(R.id.signUpTextView).setOnClickListener(this);
         findViewById(R.id.skipTextView).setOnClickListener(this);
 
         FirebaseUser user = mAuth.getCurrentUser();
-
         if (user != null) {
-        //    user.updateProfile(registration.getNickName());
             gotoMain();
         }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.loginButton:submitForm(); break;
-            case R.id.signUpTextView:gotoSignUp();break;
-            case R.id.skipTextView:gotoMain();
+        switch (v.getId()) {
+            case R.id.loginButton:
+                submitForm();
+                break;
+            case R.id.signUpTextView:
+                gotoSignUp();
+                break;
+            case R.id.skipTextView:
+                finish();
         }
 
     }
@@ -110,17 +123,14 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-/*                    FirebaseUser user = mAuth.getCurrentUser();
-                    user.updateProfile(registration.getNickName());*/
                     gotoMain();
-                    Toast.makeText(Authorization.this, "Sign In!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Authorization.this, "Вы успешно авторизовались!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(Authorization.this, "Sign In failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Authorization.this, "Не удалось авторизоваться:(", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
-
 
     private void initViews() {
         bookIconImageView = findViewById(R.id.bookIconImageView);
@@ -130,39 +140,38 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         afterAnimationView = findViewById(R.id.afterAnimationView);
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-        signUpTextView = findViewById(R.id.signUpTextView);
-        mailInputLayout=findViewById(R.id.inputLayoutMail);
-        passInputLayout=findViewById(R.id.inputLayoutPass);
+        mailInputLayout = findViewById(R.id.inputLayoutMail);
+        passInputLayout = findViewById(R.id.inputLayoutPass);
     }
 
-    private void submitForm(){
-        if(!validateEmail()){
+    private void submitForm() {
+        if (!validateEmail()) {
             return;
         }
-        if(!validatePassword()){
+        if (!validatePassword()) {
             return;
         }
         signIn(emailEditText.getText().toString(), passwordEditText.getText().toString());
     }
 
-    private boolean validateEmail(){
+    private boolean validateEmail() {
         String email = emailEditText.getText().toString().trim();
-        if(email.isEmpty()||!isValidateEmail(email)){
+        if (email.isEmpty() || !isValidateEmail(email)) {
             mailInputLayout.setError(getString(R.string.err_msg_email));
             requestFocus(emailEditText);
             return false;
-        }else{
+        } else {
             mailInputLayout.setErrorEnabled(false);
         }
         return true;
     }
 
-    private boolean validatePassword(){
-        if(passwordEditText.getText().toString().length()<6){
+    private boolean validatePassword() {
+        if (passwordEditText.getText().toString().length() < 6) {
             passInputLayout.setError(getString(R.string.err_msg_password));
             requestFocus(passwordEditText);
             return false;
-        }else{
+        } else {
             passInputLayout.setErrorEnabled(false);
         }
         return true;
@@ -174,7 +183,7 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private static boolean isValidateEmail(String email){
+    private static boolean isValidateEmail(String email) {
         return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
@@ -206,14 +215,13 @@ public class Authorization extends AppCompatActivity implements View.OnClickList
         });
     }
 
-
     public void gotoMain() {
         Intent intent = new Intent(Authorization.this, MainActivity.class);
         startActivity(intent);
     }
 
-    public void gotoSignUp(){
-        Intent intent = new Intent(Authorization.this,Registration.class);
+    public void gotoSignUp() {
+        Intent intent = new Intent(Authorization.this, Registration.class);
         startActivity(intent);
     }
 

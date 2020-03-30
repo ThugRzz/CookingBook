@@ -11,16 +11,17 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,7 +32,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class Registration extends AppCompatActivity implements View.OnClickListener {
@@ -39,9 +39,8 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth mAuth;
     private ImageView bookIconImageView;
     private RelativeLayout rootView, afterAnimationView;
-    private TextInputLayout inputLayoutName,inputLayoutEmail,inputLayoutPassword;
+    private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword;
     private EditText emailEditText, passwordEditText, nickEditText;
-    private TextView backTextView;
     private UserProfileChangeRequest changeRequest;
     private FirebaseUser user;
 
@@ -63,14 +62,24 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
 
             }
         }.start();
-
-        mAuth=FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         emailEditText.addTextChangedListener(new MyTextWatcher(emailEditText));
         nickEditText.addTextChangedListener(new MyTextWatcher(nickEditText));
         passwordEditText.addTextChangedListener(new MyTextWatcher(passwordEditText));
         findViewById(R.id.registrationButton).setOnClickListener(this);
         findViewById(R.id.backTextView).setOnClickListener(this);
+        CheckBox eyeCheckbox = findViewById(R.id.registrationCheckbox);
+        eyeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }else{
 
+                    passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
     }
 
     @Override
@@ -101,8 +110,8 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void gotoAuth(){
-        Intent intent = new Intent(Registration.this,Authorization.class);
+    private void gotoAuth() {
+        Intent intent = new Intent(Registration.this, Authorization.class);
         startActivity(intent);
     }
 
@@ -134,7 +143,7 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public UserProfileChangeRequest getNickName(){
+    public UserProfileChangeRequest getNickName() {
         return changeRequest;
     }
 
@@ -144,61 +153,60 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         afterAnimationView = findViewById(R.id.afterAnimationView1);
         emailEditText = findViewById(R.id.emailEditText1);
         passwordEditText = findViewById(R.id.passwordEditText1);
-        backTextView = findViewById(R.id.backTextView);
         nickEditText = findViewById(R.id.nickNameEditText);
         inputLayoutEmail = findViewById(R.id.inputLayoutEmail);
-        inputLayoutName=findViewById(R.id.inputLayoutName);
-        inputLayoutPassword=findViewById(R.id.inputLayoutPassword);
+        inputLayoutName = findViewById(R.id.inputLayoutName);
+        inputLayoutPassword = findViewById(R.id.inputLayoutPassword);
     }
 
-    private void submitForm(){
-        if(!validateName()){
+    private void submitForm() {
+        if (!validateName()) {
             return;
         }
-        if(!validateEmail()){
+        if (!validateEmail()) {
             return;
         }
-        if(!validatePassword()){
+        if (!validatePassword()) {
             return;
         }
         signUp(emailEditText.getText().toString(), passwordEditText.getText().toString());
     }
 
-    private boolean validateName(){
-        if(nickEditText.getText().toString().trim().isEmpty()){
+    private boolean validateName() {
+        if (nickEditText.getText().toString().trim().isEmpty()) {
             inputLayoutName.setError(getString(R.string.err_msg_name));
             requestFocus(nickEditText);
             return false;
-        }else {
+        } else {
             inputLayoutName.setErrorEnabled(false);
         }
         return true;
     }
 
-    private boolean validateEmail(){
+    private boolean validateEmail() {
         String email = emailEditText.getText().toString().trim();
-        if(email.isEmpty()||!isValidateEmail(email)){
+        if (email.isEmpty() || !isValidateEmail(email)) {
             inputLayoutEmail.setError(getString(R.string.err_msg_email));
             requestFocus(emailEditText);
             return false;
-        }else{
+        } else {
             inputLayoutEmail.setErrorEnabled(false);
         }
         return true;
     }
 
-    private boolean validatePassword(){
-        if(passwordEditText.getText().toString().length()<6){
+    private boolean validatePassword() {
+        if (passwordEditText.getText().toString().length() < 6) {
             inputLayoutPassword.setError(getString(R.string.err_msg_password));
             requestFocus(passwordEditText);
             return false;
-        }else{
+        } else {
             inputLayoutPassword.setErrorEnabled(false);
         }
         return true;
     }
 
-    private static boolean isValidateEmail(String email){
+    private static boolean isValidateEmail(String email) {
         return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 

@@ -1,5 +1,4 @@
 package com.example.cookingbook.ui.FavoritesRecipes;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,12 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
 import com.example.cookingbook.RecipeCard;
@@ -31,21 +28,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 public class FavoritesRecipesFragment extends Fragment {
 
     private final int MENU_DELETE = 2;
-
-
     private RecyclerView favoriteList;
     private DatabaseReference mRef;
     private Query query;
     private FirebaseAuth mAuth;
-    private ArrayList<Recipe> list;
     private String recipeID;
     private String currentTitle;
-    private DatabaseReference ref;
 
 
     @Override
@@ -68,18 +59,14 @@ public class FavoritesRecipesFragment extends Fragment {
                         .centerInside()
                         .into(holder.favoriteImage);
 
-
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         String a = Integer.toString(holder.getAdapterPosition());
                         currentTitle = getItem(position).getTitle();
-                        //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
-
                         return false;
                     }
                 });
-
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -93,9 +80,7 @@ public class FavoritesRecipesFragment extends Fragment {
                         startActivity(recipeIntent);
                     }
                 });
-
             }
-
             @NonNull
             @Override
             public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -103,11 +88,8 @@ public class FavoritesRecipesFragment extends Fragment {
                 return new FavoriteViewHolder(view);
             }
         };
-
         favoriteList.setAdapter(adapter);
         adapter.startListening();
-      /*  Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
-        adapter.notifyDataSetChanged();*/
     }
 
     private void deleteItem(final String currentTitle) {
@@ -117,9 +99,8 @@ public class FavoritesRecipesFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dss : dataSnapshot.getChildren()) {
                     dss.getRef().removeValue();
-                    // dss.getRef().
                 }
-                Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Рецепт удален", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -129,26 +110,18 @@ public class FavoritesRecipesFragment extends Fragment {
         });
     }
 
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_favorites_recipes, container, false);
         favoriteList = root.findViewById(R.id.TEMP);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         favoriteList.setLayoutManager(layoutManager);
         registerForContextMenu(favoriteList);
         mAuth = FirebaseAuth.getInstance();
-        list = new ArrayList<>();
-
         query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites").orderByChild("title");
-
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("favorites");
-
         return root;
     }
-
-
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -159,16 +132,6 @@ public class FavoritesRecipesFragment extends Fragment {
         }
         return super.onContextItemSelected(item);
     }
-
-/*
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0,MENU_SHARE,0,"Share");
-        menu.add(0,MENU_DELETE,0,"Delete");
-    }
-*/
-
 
     public class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView favoriteTitle, favoriteComposition, favoriteDescription;
@@ -185,10 +148,7 @@ public class FavoritesRecipesFragment extends Fragment {
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(0, MENU_DELETE, 0, "Delete");
+            menu.add(0, MENU_DELETE, 0, "Удалить");
         }
-
     }
-
-
 }

@@ -40,18 +40,15 @@ import java.util.ArrayList;
 
 public class MyRecipesFragment extends Fragment implements View.OnClickListener {
 
-    final int MENU_SHARE = 1;
-    final int MENU_DELETE = 2;
+    private final int MENU_SHARE = 1;
+    private final int MENU_DELETE = 2;
     private String count;
     private FloatingActionButton addNewRecipe;
     private RecyclerView recipeList;
     private DatabaseReference mRef;
     private Query query;
     private FirebaseAuth mAuth;
-    private ArrayList<Recipe> list;
-    private ArrayList<Recipe> filtered;
     private EditText editText;
-    private FirebaseDatabase mDatabase;
     private String recipeID;
     private String currentTitle;
     private DatabaseReference ref;
@@ -75,14 +72,12 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -107,17 +102,13 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                         .centerInside()
                         .into(holder.myImage);
 
-
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         currentTitle = getItem(position).getTitle();
-                        //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
-
                         return false;
                     }
                 });
-
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -131,7 +122,6 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                         startActivity(recipeIntent);
                     }
                 });
-
             }
 
             @NonNull
@@ -141,11 +131,8 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                 return new MyViewHolder(view);
             }
         };
-
         recipeList.setAdapter(adapter);
         adapter.startListening();
-      /*  Collections.sort(list, new Comparator<Recipe>() { @Override public int compare(Recipe lhs, Recipe rhs) { return lhs.getTitle().compareTo(rhs.getTitle()); } });
-        adapter.notifyDataSetChanged();*/
     }
 
     private void deleteItem(final String currentTitle) {
@@ -155,18 +142,15 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dss : dataSnapshot.getChildren()) {
                     dss.getRef().removeValue();
-                    // dss.getRef().
                 }
-                Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Рецепт удален", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
-
 
     private void shareItem(final String currentTitle) {
         Query shareQuery = mRef.orderByChild("title").equalTo(currentTitle);
@@ -178,7 +162,6 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                     String composition = dss.child("composition").getValue().toString();
                     String description = dss.child("description").getValue().toString();
                     String image = dss.child("image").getValue().toString();
-
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("userInfo");
                     Query infoQuery = databaseReference.orderByChild("phone");
                     infoQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -188,23 +171,18 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                             Recipe recipe = new Recipe(title, composition, description, image, uid);
                             ref = FirebaseDatabase.getInstance().getReference().child("recipes");
                             ref.push().setValue(recipe);
-                            Toast.makeText(getContext(), "Отправлено", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Вы поделились рецептом", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
                         }
                     });
-
-
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -218,18 +196,14 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
         recipeList.setLayoutManager(layoutManager);
         registerForContextMenu(recipeList);
         mAuth = FirebaseAuth.getInstance();
-        String currentUid = mAuth.getUid();
-        list = new ArrayList<>();
         editText = root.findViewById(R.id.awd);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -238,15 +212,11 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                     search(s.toString());
                 } else {
                     search("");
-
                 }
             }
         });
-
         query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes").orderByChild("title");
-
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
-
         addNewRecipe = root.findViewById(R.id.newRecipe);
         addNewRecipe.setOnClickListener(this);
         return root;
@@ -260,21 +230,10 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                 break;
             case MENU_DELETE:
                 deleteItem(currentTitle);
-
                 break;
         }
         return super.onContextItemSelected(item);
     }
-
-/*
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0,MENU_SHARE,0,"Share");
-        menu.add(0,MENU_DELETE,0,"Delete");
-    }
-*/
-
 
     @Override
     public void onClick(View v) {
@@ -283,9 +242,8 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        TextView myTitle, myComposition, myDescription;
+        TextView myTitle, myComposition;
         ImageView myImage;
-
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -300,35 +258,10 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
             menu.add(0, MENU_SHARE, 0, "Share");
             menu.add(0, MENU_DELETE, 0, "Delete");
         }
-
     }
 
 
     private void search(String s) {
-        /*Query searchQuery = mRef.orderByChild("title")
-                .startAt(s)
-                .endAt(s + "\uf0ff");
-        searchQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    list.clear();
-                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
-                        final Recipe recipe = dss.getValue(Recipe.class);
-                        list.add(recipe);
-                    }
-
-                    DataAdapter myAdapter = new DataAdapter(list, getContext());
-                    recipeList.setAdapter(myAdapter);
-                    myAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
         query = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes").orderByChild("title")
                 .startAt(s)
                 .endAt(s + "\uf0ff");
@@ -348,19 +281,13 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                         .fit()
                         .centerInside()
                         .into(holder.myImage);
-
-
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         currentTitle = getItem(position).getTitle();
-                        //    Toast.makeText(getContext(), recipeID, Toast.LENGTH_SHORT).show();
-
                         return false;
                     }
                 });
-
-
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -373,7 +300,6 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                         startActivity(recipeIntent);
                     }
                 });
-
             }
 
             @NonNull
@@ -383,9 +309,7 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
                 return new MyViewHolder(view);
             }
         };
-
         recipeList.setAdapter(adapter);
         adapter.startListening();
     }
-
 }

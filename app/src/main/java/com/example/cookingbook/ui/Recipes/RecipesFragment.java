@@ -35,23 +35,18 @@ import java.util.ArrayList;
 
 public class RecipesFragment extends Fragment implements View.OnClickListener {
 
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(getContext(), GlobalRecipeCard.class);
-        startActivity(intent);
-    }
-
-    private String currentTitle;
     private ArrayList<Recipe> list;
     private RecyclerView recipesRecyclerView;
     private DatabaseReference recipesRef;
     private Query query;
     private FirebaseAuth mAuth;
     private EditText searchEditText;
-    private String count;
-    private DatabaseReference mRef;
 
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(getContext(), GlobalRecipeCard.class);
+        startActivity(intent);
+    }
 
     @Override
     public void onStart() {
@@ -67,11 +62,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                 recipesRef.child(recipeID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String recipesImage = dataSnapshot.child("image").getValue().toString();
-                        String recipesTitle = dataSnapshot.child("title").getValue().toString();
-                        String recipesComposition = dataSnapshot.child("composition").getValue().toString();
-                        String recipesDescription = dataSnapshot.child("description").getValue().toString();
-
 
                         holder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -83,9 +73,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 recipeIntent.putExtra("description", model.getDescription());
                                 recipeIntent.putExtra("recipe_ref", recipeID);
                                 recipeIntent.putExtra("displayName", model.getDisplayName());
-                                recipeIntent.putExtra("recipesCount", model.getRecipesCount());
-                                recipeIntent.putExtra("avatarURL", model.getAvatarURL());
-                                recipeIntent.putExtra("phoneNumber", model.getPhone());
                                 if (model.getUid() != null) {
                                     recipeIntent.putExtra("uid", model.getUid());
                                 } else {
@@ -94,19 +81,16 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 startActivity(recipeIntent);
                             }
                         });
-
-
-                        holder.title.setText(recipesTitle);
-                        holder.composition.setText(recipesComposition);
+                        holder.title.setText(model.getTitle());
+                        holder.composition.setText(model.getComposition());
                         dataSnapshot.getChildrenCount();
                         Picasso.get()
-                                .load(Uri.parse(recipesImage))
+                                .load(Uri.parse(model.getImage()))
                                 .placeholder(R.drawable.defaultimage)
                                 .fit()
                                 .centerInside()
                                 .into(holder.image);
                     }
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -163,9 +147,7 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
     }
 
     public static class RecipesViewHolder extends RecyclerView.ViewHolder {
-
-
-        TextView title, composition, description;
+        TextView title, composition;
         ImageView image;
 
         public RecipesViewHolder(@NonNull View itemView) {
@@ -174,37 +156,12 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
             composition = itemView.findViewById(R.id.composition);
             image = itemView.findViewById(R.id.image);
         }
-
     }
 
     private void search(String s) {
-       /* Query searchQuery = recipesRef.orderByChild("title")
+        query = FirebaseDatabase.getInstance().getReference().child("recipes").orderByChild("title")
                 .startAt(s)
                 .endAt(s + "\uf0ff");
-        searchQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    list.clear();
-                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
-                        final Recipe recipe = dss.getValue(Recipe.class);
-                        list.add(recipe);
-                    }
-
-                    DataAdapter myAdapter = new DataAdapter(list, getContext());
-                    recipesRecyclerView.setAdapter(myAdapter);
-                    myAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-        query = FirebaseDatabase.getInstance().getReference().child("recipes").orderByChild("title")
-        .startAt(s)
-        .endAt(s+"\uf0ff");
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
                 .build();
@@ -219,9 +176,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                         String recipesImage = dataSnapshot.child("image").getValue().toString();
                         String recipesTitle = dataSnapshot.child("title").getValue().toString();
                         String recipesComposition = dataSnapshot.child("composition").getValue().toString();
-                        String recipesDescription = dataSnapshot.child("description").getValue().toString();
-
-
                         holder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -232,9 +186,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 recipeIntent.putExtra("description", model.getDescription());
                                 recipeIntent.putExtra("recipe_ref", recipeID);
                                 recipeIntent.putExtra("displayName", model.getDisplayName());
-                                recipeIntent.putExtra("recipesCount", model.getRecipesCount());
-                                recipeIntent.putExtra("avatarURL", model.getAvatarURL());
-                                recipeIntent.putExtra("phoneNumber", model.getPhone());
                                 if (model.getUid() != null) {
                                     recipeIntent.putExtra("uid", model.getUid());
                                 } else {
@@ -243,8 +194,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 startActivity(recipeIntent);
                             }
                         });
-
-
                         holder.title.setText(recipesTitle);
                         holder.composition.setText(recipesComposition);
                         dataSnapshot.getChildrenCount();
@@ -255,7 +204,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 .centerInside()
                                 .into(holder.image);
                     }
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {

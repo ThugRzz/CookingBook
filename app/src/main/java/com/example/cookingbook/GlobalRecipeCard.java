@@ -26,21 +26,14 @@ import com.squareup.picasso.Picasso;
 
 public class GlobalRecipeCard extends AppCompatActivity {
     private String image;
-    private String email;
-    private String displayName;
     private String title;
     private String composition;
     private String description;
-    private String recipeRef;
-    private String avatarURL;
-    private String recipesCount;
-    private String phoneNumber;
     private String uid;
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
     private DatabaseReference mRef;
     private DatabaseReference ref;
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,7 +54,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
                 if (uid.equals("0")) {
                     Intent intent = new Intent(GlobalRecipeCard.this, UserInfo.class);
                     intent.putExtra("dispName", "Ким Андрей");
-                    intent.putExtra("count", "Очень много=)");
+                    intent.putExtra("count", "очень много=)");
                     intent.putExtra("phone", "+79050135580");
                     intent.putExtra("avatar", "android.resource://com.example.cookingbook/drawable/avatar");
                     intent.putExtra("email","kummu-97@mail.ru");
@@ -131,15 +124,8 @@ public class GlobalRecipeCard extends AppCompatActivity {
         title = getIntent().getExtras().getString("title");
         composition = getIntent().getExtras().getString("composition");
         description = getIntent().getExtras().getString("description");
-        recipeRef = getIntent().getExtras().getString("recipe_ref");
-        displayName = getIntent().getExtras().getString("displayName");
-        recipesCount = getIntent().getExtras().getString("recipesCount");
-        avatarURL = getIntent().getExtras().getString("avatarURL");
-        phoneNumber = getIntent().getExtras().getString("phoneNumber");
-        email=getIntent().getExtras().getString("email");
         uid = getIntent().getExtras().getString("uid");
 
-        //   Toast.makeText(this, recipeRef, Toast.LENGTH_SHORT).show();
         ImageView imageView = findViewById(R.id.picGlobal);
         TextView displayNameView = findViewById(R.id.displayNameTextView);
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingToolbarGlobal);

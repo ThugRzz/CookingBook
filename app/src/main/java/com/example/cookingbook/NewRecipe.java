@@ -35,8 +35,6 @@ import com.squareup.picasso.Picasso;
 public class NewRecipe extends AppCompatActivity implements View.OnClickListener {
 
     public static final int REQUEST_IMAGE_GET = 1;
-
-    boolean isEqual;
     private String title;
     private String description;
     private String composition;
@@ -46,19 +44,15 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     private EditText createComposition;
     private ImageView createImage;
     private Button createRecipeButton;
-    private Uri fullPhotoURI;
-    private Recipe recipe;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mRef;
     private StorageReference mStorageRef;
-    private ValueEventListener listener;
-    private DatabaseReference ref;
     private Button changeImageButton;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;
@@ -81,7 +75,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         createDescription = findViewById(R.id.Description);
         createTitle = findViewById(R.id.Title);
         createImage = findViewById(R.id.recipePic);
-        changeImageButton=findViewById(R.id.changeImageButton);
+        changeImageButton = findViewById(R.id.changeImageButton);
         createRecipeButton = findViewById(R.id.confirm);
         createRecipeButton.setOnClickListener(this);
         changeImageButton.setOnClickListener(this);
@@ -98,7 +92,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
 
         if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
             final Uri selectedImage = data.getData();
-            String name = generateRandomNameForImage();
+            String name = createNameForImage();
             final StorageReference imageRef = mStorageRef.child("images/" + name + ".jpg");
             UploadTask uploadTask = imageRef.putFile(selectedImage);
             Task<Uri> uriTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -138,7 +132,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.confirm:
-                if (image==null||image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
+                if (image == null || image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
                     Toast.makeText(NewRecipe.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -152,9 +146,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
             case R.id.changeImageButton:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                if (intent.resolveActivity(
-
-                        getPackageManager()) != null) {
+                if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, REQUEST_IMAGE_GET);
                 }
                 break;
@@ -169,15 +161,13 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         clearData();
     }
 
-    private String generateRandomNameForImage() {
+    private String createNameForImage() {
         String symbols = "qwertyuiopasdfghjklzxcvbnm";
         StringBuilder randString = new StringBuilder();
-
         int count = 10 + (int) (Math.random() * 30);
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             randString.append(symbols.charAt((int) (Math.random() * symbols.length())));
-
+        }
         return randString.toString();
     }
 
@@ -202,10 +192,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
                         return;
                     }
                 }
-
                 pushRecipe(title, composition, description, image);
-
-
             }
 
             @Override
@@ -214,6 +201,5 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
             }
         });
     }
-
 }
 

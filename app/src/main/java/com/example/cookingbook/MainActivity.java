@@ -25,16 +25,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private EditText queryEditText;
-    private Button searchButton;
     private FirebaseAuth mAuth;
     private String count;
 
@@ -55,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = headerView.findViewById(R.id.textView);
         TextView textView1 = headerView.findViewById(R.id.login);
         ImageView avatarImage = headerView.findViewById(R.id.imageView);
-        mAuth=FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         textView.setText(mAuth.getCurrentUser().getEmail());
         textView1.setText(mAuth.getCurrentUser().getDisplayName());
         Picasso.get()
@@ -64,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
                 .fit()
                 .centerInside()
                 .into(avatarImage);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         updateUserInfo();
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_recipes, R.id.nav_my_recipes, R.id.nav_favorites_recipes,
@@ -75,11 +69,9 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
     }
-    
 
-    private void updateUserInfo(){
+    private void updateUserInfo() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid()).child("recipes");
         Query myQuery = reference.orderByChild("title");
         myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -92,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         dataSnapshot.getRef().child("count").setValue(count);
                         dataSnapshot.getRef().child("displayName").setValue(mAuth.getCurrentUser().getDisplayName());
-                        if(mAuth.getCurrentUser().getPhotoUrl()==null){
+                        if (mAuth.getCurrentUser().getPhotoUrl() == null) {
                             dataSnapshot.getRef().child("avatar").setValue(R.drawable.nophoto);
-                        }else {
+                        } else {
                             dataSnapshot.getRef().child("avatar").setValue(mAuth.getCurrentUser().getPhotoUrl().toString());
                         }
                         dataSnapshot.getRef().child("uid").setValue(mAuth.getCurrentUser().getUid());
@@ -106,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-                //      Toast.makeText(getContext(),count,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -116,12 +107,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
 }
