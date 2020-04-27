@@ -1,6 +1,5 @@
 package com.example.cookingbook.ui.FavoritesRecipes;
-import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -10,13 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
-import com.example.cookingbook.RecipeCard;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 public class FavoritesRecipesFragment extends Fragment {
 
@@ -35,29 +34,30 @@ public class FavoritesRecipesFragment extends Fragment {
     private DatabaseReference mRef;
     private Query query;
     private FirebaseAuth mAuth;
-    private String recipeID;
     private String currentTitle;
+    private FirebaseRecyclerOptions<Recipe> options;
+    private FirebaseRecyclerAdapter<Recipe, FavoritesViewHolder> adapter;
 
 
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Recipe>()
+        options = new FirebaseRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
                 .build();
 
-        FirebaseRecyclerAdapter<Recipe, FavoriteViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, FavoriteViewHolder>(options) {
+        /*FirebaseRecyclerAdapter<Recipe, FavoritesViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, FavoritesViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position, @NonNull Recipe model) {
+            protected void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position, @NonNull Recipe model) {
                 recipeID = getRef(position).getKey();
-                holder.favoriteTitle.setText(model.getTitle());
-                holder.favoriteComposition.setText(model.getComposition());
+                holder.getFavoriteTitle().setText(model.getTitle());
+                holder.getFavoriteComposition().setText(model.getComposition());
                 Picasso.get()
                         .load(Uri.parse(model.getImage()))
                         .placeholder(R.drawable.defaultimage)
                         .fit()
                         .centerInside()
-                        .into(holder.favoriteImage);
+                        .into(holder.getFavoriteImage());
 
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -83,11 +83,12 @@ public class FavoritesRecipesFragment extends Fragment {
             }
             @NonNull
             @Override
-            public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public FavoritesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorites_list_item, parent, false);
-                return new FavoriteViewHolder(view);
+                return new FavoritesViewHolder(view);
             }
-        };
+        };*/
+        adapter = new FavoritesRecipesFragmentAdapter(options, getContext());
         favoriteList.setAdapter(adapter);
         adapter.startListening();
     }
@@ -127,18 +128,21 @@ public class FavoritesRecipesFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case MENU_DELETE:
+                FavoritesRecipesFragmentAdapter ad = (FavoritesRecipesFragmentAdapter)adapter;
+                currentTitle = ((FavoritesRecipesFragmentAdapter) adapter).getCurrentTitle();
                 deleteItem(currentTitle);
                 break;
         }
         return super.onContextItemSelected(item);
     }
 
-    public class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        TextView favoriteTitle, favoriteComposition, favoriteDescription;
-        ImageView favoriteImage;
+    /*public class FavoritesViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        private static final int MENU_DELETE = 2;
+        private TextView favoriteTitle, favoriteComposition, favoriteDescription;
+        private ImageView favoriteImage;
 
 
-        public FavoriteViewHolder(@NonNull View itemView) {
+        public FavoritesViewHolder(@NonNull View itemView) {
             super(itemView);
             favoriteTitle = itemView.findViewById(R.id.favoriteTitle);
             favoriteComposition = itemView.findViewById(R.id.favoriteComposition);
@@ -146,9 +150,42 @@ public class FavoritesRecipesFragment extends Fragment {
             itemView.setOnCreateContextMenuListener(this);
         }
 
+        public TextView getFavoriteTitle() {
+            return favoriteTitle;
+        }
+
+        public void setFavoriteTitle(TextView favoriteTitle) {
+            this.favoriteTitle = favoriteTitle;
+        }
+
+        public TextView getFavoriteComposition() {
+            return favoriteComposition;
+        }
+
+        public void setFavoriteComposition(TextView favoriteComposition) {
+            this.favoriteComposition = favoriteComposition;
+        }
+
+        public TextView getFavoriteDescription() {
+            return favoriteDescription;
+        }
+
+        public void setFavoriteDescription(TextView favoriteDescription) {
+            this.favoriteDescription = favoriteDescription;
+        }
+
+        public ImageView getFavoriteImage() {
+            return favoriteImage;
+        }
+
+        public void setFavoriteImage(ImageView favoriteImage) {
+            this.favoriteImage = favoriteImage;
+        }
+
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.add(0, MENU_DELETE, 0, "Удалить");
         }
-    }
+
+    }*/
 }
