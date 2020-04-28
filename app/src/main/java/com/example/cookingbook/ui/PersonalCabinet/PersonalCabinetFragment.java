@@ -15,9 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.cookingbook.Authorization;
+import com.example.cookingbook.ui.Login.AuthorizationFragment;
 import com.example.cookingbook.ChangeProfileActivity;
 import com.example.cookingbook.R;
+import com.example.cookingbook.ui.Login.LoginActivity;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,7 +59,7 @@ public class PersonalCabinetFragment extends Fragment {
                 break;
             case R.id.LogOut:
                 mAuth.signOut();
-                Intent intent = new Intent(getContext(), Authorization.class);
+                Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
                 break;
         }

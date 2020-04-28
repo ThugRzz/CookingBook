@@ -1,11 +1,14 @@
-package com.example.cookingbook;
+package com.example.cookingbook.ui.Login;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.animation.Animator;
-import android.content.Intent;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -14,7 +17,9 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -24,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.cookingbook.R;
+import com.example.cookingbook.ui.Login.AuthorizationFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,10 +39,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.concurrent.Executor;
+
 import static android.view.View.VISIBLE;
 
-public class Registration extends AppCompatActivity implements View.OnClickListener {
+public class RegistrationFragment extends Fragment implements View.OnClickListener {
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context=context;
+    }
+
+    private Context context;
     private FirebaseAuth mAuth;
     private ImageView bookIconImageView;
     private RelativeLayout rootView, afterAnimationView;
@@ -44,15 +60,16 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
     private UserProfileChangeRequest changeRequest;
     private FirebaseUser user;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
-        initViews();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_registration,container,false);
+        initViews(root);
         new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                rootView.setBackgroundColor(ContextCompat.getColor(Registration.this, R.color.colorSplashText));
+                rootView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorSplashText));
                 bookIconImageView.setImageResource(R.drawable.background_color_book);
                 startAnimation();
             }
@@ -66,9 +83,9 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         emailEditText.addTextChangedListener(new MyTextWatcher(emailEditText));
         nickEditText.addTextChangedListener(new MyTextWatcher(nickEditText));
         passwordEditText.addTextChangedListener(new MyTextWatcher(passwordEditText));
-        findViewById(R.id.registrationButton).setOnClickListener(this);
-        findViewById(R.id.backTextView).setOnClickListener(this);
-        CheckBox eyeCheckbox = findViewById(R.id.registrationCheckbox);
+        root.findViewById(R.id.registrationButton).setOnClickListener(this);
+        root.findViewById(R.id.backTextView).setOnClickListener(this);
+        CheckBox eyeCheckbox = root.findViewById(R.id.registrationCheckbox);
         eyeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -80,6 +97,8 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+        return root;
+
     }
 
     @Override
@@ -94,25 +113,27 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
     }
 
     public void signUp(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     user = FirebaseAuth.getInstance().getCurrentUser();
                     changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(nickEditText.getText().toString()).build();
                     user.updateProfile(changeRequest);
-                    Toast.makeText(Registration.this, "Регистрация прошла успешно!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Регистрация прошла успешно!", Toast.LENGTH_SHORT).show();
                     gotoAuth();
                 } else {
-                    Toast.makeText(Registration.this, "Не удалось зарегистрироваться:(", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Не удалось зарегистрироваться:(", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
     private void gotoAuth() {
-        Intent intent = new Intent(Registration.this, Authorization.class);
-        startActivity(intent);
+        Fragment authorizationFragment = new AuthorizationFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentContainer, authorizationFragment);
+        ft.commit();
     }
 
     private void startAnimation() {
@@ -147,16 +168,16 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         return changeRequest;
     }
 
-    private void initViews() {
-        bookIconImageView = findViewById(R.id.bookIconImageView1);
-        rootView = findViewById(R.id.rootView1);
-        afterAnimationView = findViewById(R.id.afterAnimationView1);
-        emailEditText = findViewById(R.id.emailEditText1);
-        passwordEditText = findViewById(R.id.passwordEditText1);
-        nickEditText = findViewById(R.id.nickNameEditText);
-        inputLayoutEmail = findViewById(R.id.inputLayoutEmail);
-        inputLayoutName = findViewById(R.id.inputLayoutName);
-        inputLayoutPassword = findViewById(R.id.inputLayoutPassword);
+    private void initViews(View root) {
+        bookIconImageView = root.findViewById(R.id.bookIconImageView1);
+        rootView = root.findViewById(R.id.rootView1);
+        afterAnimationView = root.findViewById(R.id.afterAnimationView1);
+        emailEditText = root.findViewById(R.id.emailEditText1);
+        passwordEditText = root.findViewById(R.id.passwordEditText1);
+        nickEditText = root.findViewById(R.id.nickNameEditText);
+        inputLayoutEmail = root.findViewById(R.id.inputLayoutEmail);
+        inputLayoutName = root.findViewById(R.id.inputLayoutName);
+        inputLayoutPassword = root.findViewById(R.id.inputLayoutPassword);
     }
 
     private void submitForm() {
@@ -212,7 +233,7 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
 
     private void requestFocus(View view) {
         if (view.requestFocus()) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            ((Activity)getContext()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 
@@ -245,3 +266,5 @@ public class Registration extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
+
+
