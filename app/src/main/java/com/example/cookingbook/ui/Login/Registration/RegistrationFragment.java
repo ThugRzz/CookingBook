@@ -1,4 +1,4 @@
-package com.example.cookingbook.ui.Login;
+package com.example.cookingbook.ui.Login.Registration;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.cookingbook.R;
-import com.example.cookingbook.ui.Login.AuthorizationFragment;
+import com.example.cookingbook.ui.Login.Auth.AuthorizationFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -43,7 +43,7 @@ import java.util.concurrent.Executor;
 
 import static android.view.View.VISIBLE;
 
-public class RegistrationFragment extends Fragment implements View.OnClickListener {
+public class RegistrationFragment extends Fragment implements View.OnClickListener,RegistrationContract.View{
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -59,6 +59,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private EditText emailEditText, passwordEditText, nickEditText;
     private UserProfileChangeRequest changeRequest;
     private FirebaseUser user;
+    private RegistrationPresenter presenter;
 
 
     @Nullable
@@ -129,6 +130,10 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         });
     }
 
+    public void registration(String email,String password,String nickname){
+        presenter.registration(this.getActivity(),email,password,nickname);
+    }
+
     private void gotoAuth() {
         Fragment authorizationFragment = new AuthorizationFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -178,6 +183,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         inputLayoutEmail = root.findViewById(R.id.inputLayoutEmail);
         inputLayoutName = root.findViewById(R.id.inputLayoutName);
         inputLayoutPassword = root.findViewById(R.id.inputLayoutPassword);
+        presenter = new RegistrationPresenter(this);
     }
 
     private void submitForm() {
@@ -190,7 +196,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         if (!validatePassword()) {
             return;
         }
-        signUp(emailEditText.getText().toString(), passwordEditText.getText().toString());
+        registration(emailEditText.getText().toString(), passwordEditText.getText().toString(),nickEditText.getText().toString());
     }
 
     private boolean validateName() {
@@ -235,6 +241,16 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         if (view.requestFocus()) {
             ((Activity)getContext()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+    }
+
+    @Override
+    public void onRegistrationSuccess(FirebaseUser user) {
+        Toast.makeText(getContext(),"Вы успешно зарегистрировались!",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRegistrationFailure(String message) {
+        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
     }
 
     private class MyTextWatcher implements TextWatcher {

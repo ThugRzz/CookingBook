@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".UserInfo" />
-        <activity android:name=".ChangeProfileActivity" />
+        <activity android:name=".ui.PersonalCabinet.ChangeProfileActivity" />
         <activity android:name=".GlobalRecipeCard" />
         <activity android:name=".NewRecipe" />
         <activity android:name=".RecipeCard" />

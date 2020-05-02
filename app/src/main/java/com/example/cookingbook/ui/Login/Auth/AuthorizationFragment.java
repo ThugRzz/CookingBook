@@ -1,4 +1,4 @@
-package com.example.cookingbook.ui.Login;
+package com.example.cookingbook.ui.Login.Auth;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.example.cookingbook.MainActivity;
 import com.example.cookingbook.R;
+import com.example.cookingbook.ui.Login.Registration.RegistrationFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -41,18 +42,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.concurrent.Executor;
-
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class AuthorizationFragment extends Fragment implements View.OnClickListener {
+public class AuthorizationFragment extends Fragment implements View.OnClickListener, AuthContract.View {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context=context;
     }
 
+    private AuthPresenter mAuthPresenter;
     private Context context;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -133,6 +133,7 @@ public class AuthorizationFragment extends Fragment implements View.OnClickListe
 
     }
 
+/*
     public void signIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener((Activity)getContext(), new OnCompleteListener<AuthResult>() {
             @Override
@@ -146,6 +147,7 @@ public class AuthorizationFragment extends Fragment implements View.OnClickListe
             }
         });
     }
+*/
 
     private void initViews(View root) {
         bookIconImageView = root.findViewById(R.id.bookIconImageView);
@@ -157,6 +159,11 @@ public class AuthorizationFragment extends Fragment implements View.OnClickListe
         passwordEditText = root.findViewById(R.id.passwordEditText);
         mailInputLayout = root.findViewById(R.id.inputLayoutMail);
         passInputLayout = root.findViewById(R.id.inputLayoutPass);
+        mAuthPresenter = new AuthPresenter(this);
+    }
+
+    private void authorization(String email, String password){
+        mAuthPresenter.authorization(this.getActivity(),email,password);
     }
 
     private void submitForm() {
@@ -166,7 +173,8 @@ public class AuthorizationFragment extends Fragment implements View.OnClickListe
         if (!validatePassword()) {
             return;
         }
-        signIn(emailEditText.getText().toString(), passwordEditText.getText().toString());
+        authorization(emailEditText.getText().toString(), passwordEditText.getText().toString());
+
     }
 
     private boolean validateEmail() {
@@ -240,6 +248,16 @@ public class AuthorizationFragment extends Fragment implements View.OnClickListe
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragmentContainer, registrationFragment);
         ft.commit();
+    }
+
+    @Override
+    public void onAuthSuccess(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onAuthFailure(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private class MyTextWatcher implements TextWatcher {

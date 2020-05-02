@@ -14,9 +14,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.cookingbook.ui.Login.AuthorizationFragment;
-import com.example.cookingbook.ChangeProfileActivity;
 import com.example.cookingbook.R;
 import com.example.cookingbook.ui.Login.LoginActivity;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -37,6 +37,7 @@ public class PersonalCabinetFragment extends Fragment {
     private TextView emailTextView, nicknameTextView, counterTextView, phoneTextView;
     private ImageView avatarImageView;
     private DatabaseReference mRef;
+    private NavController navController;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,9 +54,10 @@ public class PersonalCabinetFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.changeProfile:
-                Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
+/*                Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
                 changeProfileIntent.putExtra(NAME, mAuth.getCurrentUser().getDisplayName());
-                startActivity(changeProfileIntent);
+                startActivity(changeProfileIntent);*/
+                navController.navigate(R.id.changeProfileActivity);
                 break;
             case R.id.LogOut:
                 mAuth.signOut();
@@ -110,6 +112,7 @@ public class PersonalCabinetFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_personal_cabinet, container, false);
         mAuth = FirebaseAuth.getInstance();
+        navController = NavHostFragment.findNavController(this);
         CollapsingToolbarLayout collapsingToolbarLayout = root.findViewById(R.id.collapsingToolbarCabinet);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);

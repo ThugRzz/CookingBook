@@ -1,21 +1,26 @@
-package com.example.cookingbook;
+package com.example.cookingbook.ui.PersonalCabinet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.cookingbook.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,7 +37,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class ChangeProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class ChangeProfileActivity extends Fragment implements View.OnClickListener {
 
     public static final int REQUEST_IMAGE_GET = 1;
     private Button changeAvatarButton, confirmButton;
@@ -48,30 +53,30 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                getActivity().finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarChangeProfile);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.activity_change_profile,container,false);
+        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbarChangeProfile);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        name = getIntent().getExtras().getString("NAME");
-        phoneET = findViewById(R.id.changePhoneNumber);
+//        name = getActivity().getIntent().getExtras().getString("NAME");
+        phoneET = root.findViewById(R.id.changePhoneNumber);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("userInfo");
-        nameET = findViewById(R.id.changeNickname);
+        nameET = root.findViewById(R.id.changeNickname);
         nameET.setText(name);
-        avatarImage = findViewById(R.id.changeAvatar);
+        avatarImage = root.findViewById(R.id.changeAvatar);
         Picasso.get()
                 .load(user.getPhotoUrl())
                 .placeholder(R.drawable.defaultimage)
@@ -93,17 +98,19 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
             }
         });
-        changeAvatarButton = findViewById(R.id.changeAvatarButton);
+        changeAvatarButton = root.findViewById(R.id.changeAvatarButton);
         changeAvatarButton.setOnClickListener(this);
-        confirmButton = findViewById(R.id.confirmButton);
+        confirmButton = root.findViewById(R.id.confirmButton);
         confirmButton.setOnClickListener(this);
+        return root;
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_GET && resultCode == Activity.RESULT_OK) {
             final Uri selectedImage = data.getData();
             String name = generateRandomNameForImage();
             final StorageReference imageRef = mStorageRef.child("avatars/" + name + ".jpg");
@@ -160,7 +167,7 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 if (intent.resolveActivity(
-                        getPackageManager()) != null) {
+                        getActivity().getPackageManager()) != null) {
                     startActivityForResult(intent, REQUEST_IMAGE_GET);
                 }
                 break;
@@ -182,7 +189,7 @@ public class ChangeProfileActivity extends AppCompatActivity implements View.OnC
 
                     }
                 });
-                Toast.makeText(this, "Данные успешно изменены!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Данные успешно изменены!", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
