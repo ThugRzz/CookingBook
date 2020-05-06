@@ -5,15 +5,15 @@ import androidx.appcompat.app.ActionBar;
 
 import androidx.appcompat.widget.Toolbar;
 
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cookingbook.base.BaseActivity;
+import com.example.cookingbook.parcelablemodel.RecipeInfo;
+import com.example.cookingbook.util.ViewUtil;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-
-import com.squareup.picasso.Picasso;
 
 public class RecipeCard extends BaseActivity {
     private String image;

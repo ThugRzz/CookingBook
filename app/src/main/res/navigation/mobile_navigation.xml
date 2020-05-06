@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/nav_recipes"
-        android:name="com.example.cookingbook.ui.Recipes.RecipesFragment"
+        android:name="com.example.cookingbook.ui.globalrecipes.RecipesFragment"
         android:label="@string/menu_recipes"
         tools:layout="@layout/fragment_recipes" />
 
     <fragment
         android:id="@+id/nav_my_recipes"
-        android:name="com.example.cookingbook.ui.MyRecipes.MyRecipesFragment"
+        android:name="com.example.cookingbook.ui.myrecipes.MyRecipesFragment"
         android:label="@string/menu_myRecipes"
         tools:layout="@layout/fragment_my_recipes" />
 
     <fragment
         android:id="@+id/nav_favorites_recipes"
-        android:name="com.example.cookingbook.ui.FavoritesRecipes.FavoritesRecipesFragment"
+        android:name="com.example.cookingbook.ui.favoritesrecipes.FavoritesRecipesFragment"
         android:label="@string/menu_favoritesRecipes"
         tools:layout="@layout/fragment_favorites_recipes" />
 
     <fragment
         android:id="@+id/nav_personal_cabinet"
-        android:name="com.example.cookingbook.ui.PersonalCabinet.PersonalCabinetFragment"
+        android:name="com.example.cookingbook.ui.personalcabinet.PersonalCabinetFragment"
         android:label="@string/menu_personalCabinet"
         tools:layout="@layout/fragment_personal_cabinet" >
         <action
@@ -35,12 +35,12 @@
 
     <fragment
         android:id="@+id/nav_about_us"
-        android:name="com.example.cookingbook.ui.AboutUs.AboutUsFragment"
+        android:name="com.example.cookingbook.ui.aboutus.AboutUsFragment"
         android:label="@string/menu_info"
         tools:layout="@layout/fragment_about_us" />
     <fragment
         android:id="@+id/changeProfileActivity"
-        android:name="com.example.cookingbook.ui.PersonalCabinet.ChangeProfileActivity"
+        android:name="com.example.cookingbook.ui.personalcabinet.ChangeProfileActivity"
         android:label="@string/menu_change_profile_info"
         tools:layout="@layout/activity_change_profile" />
 </navigation>
