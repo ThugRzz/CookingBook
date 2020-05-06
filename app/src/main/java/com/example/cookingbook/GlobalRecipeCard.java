@@ -34,6 +34,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
     FirebaseDatabase mDatabase;
     private DatabaseReference mRef;
     private DatabaseReference ref;
+    private CreatorInfo creatorInfo;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,7 +53,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
                 break;
             case R.id.aboutAuthor:
                 if (uid.equals("0")) {
-                    Intent intent = new Intent(GlobalRecipeCard.this, UserInfo.class);
+                    Intent intent = new Intent(GlobalRecipeCard.this, RecipeCreatorInfoActivity.class);
                     intent.putExtra("dispName", "Ким Андрей");
                     intent.putExtra("count", "очень много=)");
                     intent.putExtra("phone", "+79050135580");
@@ -64,7 +65,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
                     aboutAuthorQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Intent intent = new Intent(GlobalRecipeCard.this, UserInfo.class);
+                            Intent intent = new Intent(GlobalRecipeCard.this, RecipeCreatorInfoActivity.class);
                             if (dataSnapshot.child("displayName").getValue() == null) {
                                 intent.putExtra("dispName", "Cooking book");
                             } else {

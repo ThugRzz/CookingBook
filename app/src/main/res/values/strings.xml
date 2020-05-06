@@ -33,4 +33,5 @@
     <string name="err_msg_name">Введите ник полностью</string>
     <string name="err_msg_email">Введите правильную почту</string>
     <string name="err_msg_password">Пароль не может содержать меньше 6 символов</string>
+    <string name="menu_change_profile_info">Изменение личных данных</string>
 </resources>

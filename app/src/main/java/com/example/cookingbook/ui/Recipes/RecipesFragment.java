@@ -41,6 +41,8 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
     private Query query;
     private FirebaseAuth mAuth;
     private EditText searchEditText;
+    private FirebaseRecyclerOptions<Recipe>options;
+    private FirebaseRecyclerAdapter<Recipe, RecipesViewHolder> adapter;
 
     @Override
     public void onClick(View v) {
@@ -51,61 +53,11 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Recipe>()
+        options = new FirebaseRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
                 .build();
 
-        FirebaseRecyclerAdapter<Recipe, RecipesViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, RecipesViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull RecipesViewHolder holder, int position, @NonNull Recipe model) {
-                String recipeID = getRef(position).getKey();
-                recipesRef.child(recipeID).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent recipeIntent = new Intent(getContext(), GlobalRecipeCard.class);
-                                recipeIntent.putExtra("image", model.getImage());
-                                recipeIntent.putExtra("title", model.getTitle());
-                                recipeIntent.putExtra("composition", model.getComposition());
-                                recipeIntent.putExtra("description", model.getDescription());
-                                recipeIntent.putExtra("recipe_ref", recipeID);
-                                recipeIntent.putExtra("displayName", model.getDisplayName());
-                                if (model.getUid() != null) {
-                                    recipeIntent.putExtra("uid", model.getUid());
-                                } else {
-                                    recipeIntent.putExtra("uid", "0");
-                                }
-                                startActivity(recipeIntent);
-                            }
-                        });
-                        holder.title.setText(model.getTitle());
-                        holder.composition.setText(model.getComposition());
-                        dataSnapshot.getChildrenCount();
-                        Picasso.get()
-                                .load(Uri.parse(model.getImage()))
-                                .placeholder(R.drawable.defaultimage)
-                                .fit()
-                                .centerInside()
-                                .into(holder.image);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @NonNull
-            @Override
-            public RecipesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-                return new RecipesViewHolder(view);
-            }
-        };
+        adapter= new RecipesFragmentAdapter(options,getContext());
         recipesRecyclerView.setAdapter(adapter);
         adapter.startListening();
     }
@@ -146,18 +98,6 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
-    public static class RecipesViewHolder extends RecyclerView.ViewHolder {
-        TextView title, composition;
-        ImageView image;
-
-        public RecipesViewHolder(@NonNull View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.title);
-            composition = itemView.findViewById(R.id.composition);
-            image = itemView.findViewById(R.id.image);
-        }
-    }
-
     private void search(String s) {
         query = FirebaseDatabase.getInstance().getReference().child("recipes").orderByChild("title")
                 .startAt(s)
@@ -194,15 +134,14 @@ public class RecipesFragment extends Fragment implements View.OnClickListener {
                                 startActivity(recipeIntent);
                             }
                         });
-                        holder.title.setText(recipesTitle);
-                        holder.composition.setText(recipesComposition);
-                        dataSnapshot.getChildrenCount();
+                        holder.getTitle().setText(recipesTitle);
+                        holder.getComposition().setText(recipesComposition);
                         Picasso.get()
                                 .load(Uri.parse(recipesImage))
                                 .placeholder(R.drawable.defaultimage)
                                 .fit()
                                 .centerInside()
-                                .into(holder.image);
+                                .into(holder.getImage());
                     }
 
                     @Override

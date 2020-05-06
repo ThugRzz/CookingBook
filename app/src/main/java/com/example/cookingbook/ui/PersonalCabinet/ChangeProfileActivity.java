@@ -49,26 +49,10 @@ public class ChangeProfileActivity extends Fragment implements View.OnClickListe
     private StorageReference mStorageRef;
     private DatabaseReference mRef;
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getActivity().finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.activity_change_profile,container,false);
-        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbarChangeProfile);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         user = FirebaseAuth.getInstance().getCurrentUser();
 //        name = getActivity().getIntent().getExtras().getString("NAME");
         phoneET = root.findViewById(R.id.changePhoneNumber);

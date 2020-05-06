@@ -24,6 +24,8 @@ import com.example.cookingbook.NewRecipe;
 import com.example.cookingbook.R;
 import com.example.cookingbook.Recipe;
 import com.example.cookingbook.RecipeCard;
+import com.example.cookingbook.RecipeInfo;
+import com.example.cookingbook.ViewUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -52,6 +54,9 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
     private String recipeID;
     private String currentTitle;
     private DatabaseReference ref;
+    private ViewUtil viewUtil;
+    private FirebaseRecyclerAdapter<Recipe,MyRecipesViewHolder> adapter;
+    private FirebaseRecyclerOptions<Recipe> options;
 
     @Override
     public void onResume() {
@@ -85,52 +90,11 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Recipe>()
+        options = new FirebaseRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
                 .build();
 
-        FirebaseRecyclerAdapter<Recipe, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Recipe, MyViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Recipe model) {
-                recipeID = getRef(position).getKey();
-                holder.myTitle.setText(model.getTitle());
-                holder.myComposition.setText(model.getComposition());
-                Picasso.get()
-                        .load(Uri.parse(model.getImage()))
-                        .placeholder(R.drawable.defaultimage)
-                        .fit()
-                        .centerInside()
-                        .into(holder.myImage);
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        currentTitle = getItem(position).getTitle();
-                        return false;
-                    }
-                });
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent recipeIntent = new Intent(getContext(), RecipeCard.class);
-                        recipeIntent.putExtra("image", model.getImage());
-                        recipeIntent.putExtra("title", model.getTitle());
-                        recipeIntent.putExtra("composition", model.getComposition());
-                        recipeIntent.putExtra("description", model.getDescription());
-                        recipeIntent.putExtra("recipe_ref", recipeID);
-                        startActivity(recipeIntent);
-                    }
-                });
-            }
-
-            @NonNull
-            @Override
-            public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_item, parent, false);
-                return new MyViewHolder(view);
-            }
-        };
+        adapter=new MyRecipesFragmentAdapter(options,getContext());
         recipeList.setAdapter(adapter);
         adapter.startListening();
     }
@@ -192,6 +156,7 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener 
 
         View root = inflater.inflate(R.layout.fragment_my_recipes, container, false);
         recipeList = root.findViewById(R.id.myList);
+        viewUtil = new ViewUtil();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recipeList.setLayoutManager(layoutManager);
         registerForContextMenu(recipeList);

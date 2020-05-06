@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.example.cookingbook.R
 import com.example.cookingbook.Recipe
 import com.example.cookingbook.RecipeCard
+import com.example.cookingbook.RecipeInfo
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -18,11 +19,7 @@ import com.example.cookingbook.ui.FavoritesRecipes.FavoritesRecipesFragment
 
 class FavoritesRecipesFragmentAdapter(options: FirebaseRecyclerOptions<Recipe>, _context: Context):FirebaseRecyclerAdapter<Recipe,FavoritesViewHolder>(options){
 
-    val context:Context
-
-    init {
-        context=_context
-    }
+    val context:Context = _context
 
     private var currentTitle:String = ""
 
@@ -51,10 +48,7 @@ class FavoritesRecipesFragmentAdapter(options: FirebaseRecyclerOptions<Recipe>, 
 
         holder.itemView.setOnClickListener{
             val recipeIntent = Intent(context,RecipeCard::class.java)
-            recipeIntent.putExtra("image", model.image)
-            recipeIntent.putExtra("title", model.title)
-            recipeIntent.putExtra("composition", model.composition)
-            recipeIntent.putExtra("description", model.description)
+            recipeIntent.putExtra("RecipeInfo",RecipeInfo(model.title,model.composition,model.description,model.image))
             context.startActivity(recipeIntent)
         }
     }

@@ -47,6 +47,10 @@ public class RegistrationInteractor implements RegistrationContract.Interactor {
         });
     }
 
+    public void onLoggedInstance(){
+
+    }
+
     public void gotoMain(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);

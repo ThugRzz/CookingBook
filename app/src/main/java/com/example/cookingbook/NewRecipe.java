@@ -49,6 +49,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
     private DatabaseReference mRef;
     private StorageReference mStorageRef;
     private Button changeImageButton;
+    private ViewUtil viewUtil;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -70,7 +71,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        viewUtil = new ViewUtil();
         createComposition = findViewById(R.id.Composition);
         createDescription = findViewById(R.id.Description);
         createTitle = findViewById(R.id.Title);
@@ -120,12 +121,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
 
     private void setImageUrl(String url) {
         image = url;
-        Picasso.get()
-                .load(url)
-                .placeholder(R.drawable.defaultimage)
-                .fit()
-                .centerCrop()
-                .into(createImage);
+        viewUtil.putPicture(url,createImage);
     }
 
     @Override

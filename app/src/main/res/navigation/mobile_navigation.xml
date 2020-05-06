@@ -41,6 +41,6 @@
     <fragment
         android:id="@+id/changeProfileActivity"
         android:name="com.example.cookingbook.ui.PersonalCabinet.ChangeProfileActivity"
-        android:label="activity_change_profile"
+        android:label="@string/menu_change_profile_info"
         tools:layout="@layout/activity_change_profile" />
 </navigation>

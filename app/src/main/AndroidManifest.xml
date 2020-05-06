@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserInfo" />
+        <activity android:name=".RecipeCreatorInfoActivity" />
         <activity android:name=".ui.PersonalCabinet.ChangeProfileActivity" />
         <activity android:name=".GlobalRecipeCard" />
         <activity android:name=".NewRecipe" />

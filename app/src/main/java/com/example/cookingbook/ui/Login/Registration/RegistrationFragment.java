@@ -2,26 +2,22 @@ package com.example.cookingbook.ui.Login.Registration;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.animation.Animator;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -30,43 +26,32 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.cookingbook.R;
-import com.example.cookingbook.ui.Login.Auth.AuthorizationFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-
-import java.util.concurrent.Executor;
 
 import static android.view.View.VISIBLE;
 
-public class RegistrationFragment extends Fragment implements View.OnClickListener,RegistrationContract.View{
+public class RegistrationFragment extends Fragment implements View.OnClickListener, RegistrationContract.View {
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.context=context;
+        this.context = context;
     }
 
     private Context context;
-    private FirebaseAuth mAuth;
     private ImageView bookIconImageView;
     private RelativeLayout rootView, afterAnimationView;
     private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword;
     private EditText emailEditText, passwordEditText, nickEditText;
-    private UserProfileChangeRequest changeRequest;
-    private FirebaseUser user;
     private RegistrationPresenter presenter;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_registration,container,false);
-        initViews(root);
+        View root = inflater.inflate(R.layout.fragment_registration, container, false);
+        init(root);
         new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -80,20 +65,18 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
 
             }
         }.start();
-        mAuth = FirebaseAuth.getInstance();
-        emailEditText.addTextChangedListener(new MyTextWatcher(emailEditText));
-        nickEditText.addTextChangedListener(new MyTextWatcher(nickEditText));
-        passwordEditText.addTextChangedListener(new MyTextWatcher(passwordEditText));
+        emailEditText.addTextChangedListener(new RegistrationTextWatcher(emailEditText));
+        nickEditText.addTextChangedListener(new RegistrationTextWatcher(nickEditText));
+        passwordEditText.addTextChangedListener(new RegistrationTextWatcher(passwordEditText));
         root.findViewById(R.id.registrationButton).setOnClickListener(this);
         root.findViewById(R.id.backTextView).setOnClickListener(this);
         CheckBox eyeCheckbox = root.findViewById(R.id.registrationCheckbox);
         eyeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }else{
-
+                } else {
                     passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 }
             }
@@ -109,36 +92,8 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
                 submitForm();
                 break;
             case R.id.backTextView:
-                gotoAuth();
+                presenter.onBackViewWasClicked((AppCompatActivity) this.getActivity());
         }
-    }
-
-    public void signUp(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    user = FirebaseAuth.getInstance().getCurrentUser();
-                    changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(nickEditText.getText().toString()).build();
-                    user.updateProfile(changeRequest);
-                    Toast.makeText(getContext(), "Регистрация прошла успешно!", Toast.LENGTH_SHORT).show();
-                    gotoAuth();
-                } else {
-                    Toast.makeText(getContext(), "Не удалось зарегистрироваться:(", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    public void registration(String email,String password,String nickname){
-        presenter.registration(this.getActivity(),email,password,nickname);
-    }
-
-    private void gotoAuth() {
-        Fragment authorizationFragment = new AuthorizationFragment();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragmentContainer, authorizationFragment);
-        ft.commit();
     }
 
     private void startAnimation() {
@@ -169,11 +124,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         });
     }
 
-    public UserProfileChangeRequest getNickName() {
-        return changeRequest;
-    }
-
-    private void initViews(View root) {
+    private void init(View root) {
         bookIconImageView = root.findViewById(R.id.bookIconImageView1);
         rootView = root.findViewById(R.id.rootView1);
         afterAnimationView = root.findViewById(R.id.afterAnimationView1);
@@ -187,77 +138,33 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     }
 
     private void submitForm() {
-        if (!validateName()) {
+        if (!presenter.validateNickname(inputLayoutName, nickEditText, getContext())) {
             return;
         }
-        if (!validateEmail()) {
+        if (!presenter.validateEmail(inputLayoutEmail, emailEditText, getContext())) {
             return;
         }
-        if (!validatePassword()) {
+        if (!presenter.validatePassword(inputLayoutPassword, passwordEditText, getContext())) {
             return;
         }
-        registration(emailEditText.getText().toString(), passwordEditText.getText().toString(),nickEditText.getText().toString());
-    }
-
-    private boolean validateName() {
-        if (nickEditText.getText().toString().trim().isEmpty()) {
-            inputLayoutName.setError(getString(R.string.err_msg_name));
-            requestFocus(nickEditText);
-            return false;
-        } else {
-            inputLayoutName.setErrorEnabled(false);
-        }
-        return true;
-    }
-
-    private boolean validateEmail() {
-        String email = emailEditText.getText().toString().trim();
-        if (email.isEmpty() || !isValidateEmail(email)) {
-            inputLayoutEmail.setError(getString(R.string.err_msg_email));
-            requestFocus(emailEditText);
-            return false;
-        } else {
-            inputLayoutEmail.setErrorEnabled(false);
-        }
-        return true;
-    }
-
-    private boolean validatePassword() {
-        if (passwordEditText.getText().toString().length() < 6) {
-            inputLayoutPassword.setError(getString(R.string.err_msg_password));
-            requestFocus(passwordEditText);
-            return false;
-        } else {
-            inputLayoutPassword.setErrorEnabled(false);
-        }
-        return true;
-    }
-
-    private static boolean isValidateEmail(String email) {
-        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    private void requestFocus(View view) {
-        if (view.requestFocus()) {
-            ((Activity)getContext()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        }
+        presenter.registration(this.getActivity(), emailEditText.getText().toString(), passwordEditText.getText().toString(), nickEditText.getText().toString());
     }
 
     @Override
     public void onRegistrationSuccess(FirebaseUser user) {
-        Toast.makeText(getContext(),"Вы успешно зарегистрировались!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Вы успешно зарегистрировались!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRegistrationFailure(String message) {
-        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private class MyTextWatcher implements TextWatcher {
+    private class RegistrationTextWatcher implements TextWatcher {
 
         private View view;
 
-        private MyTextWatcher(View view) {
+        private RegistrationTextWatcher(View view) {
             this.view = view;
         }
 
@@ -270,13 +177,13 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.nickNameEditText:
-                    validateName();
+                    presenter.validateNickname(inputLayoutName, nickEditText, getContext());
                     break;
                 case R.id.emailEditText1:
-                    validateEmail();
+                    presenter.validateEmail(inputLayoutEmail, emailEditText, getContext());
                     break;
                 case R.id.passwordEditText1:
-                    validatePassword();
+                    presenter.validatePassword(inputLayoutPassword, passwordEditText, getContext());
                     break;
             }
         }
