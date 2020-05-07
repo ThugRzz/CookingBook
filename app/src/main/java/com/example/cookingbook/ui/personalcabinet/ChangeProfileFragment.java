@@ -33,7 +33,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-public class ChangeProfileActivity extends Fragment implements View.OnClickListener {
+public class ChangeProfileFragment extends Fragment implements View.OnClickListener {
 
     public static final int REQUEST_IMAGE_GET = 1;
     private Button changeAvatarButton, confirmButton;

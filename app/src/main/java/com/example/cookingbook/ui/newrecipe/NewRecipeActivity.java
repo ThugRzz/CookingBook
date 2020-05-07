@@ -34,7 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-public class NewRecipe extends AppCompatActivity implements View.OnClickListener {
+public class NewRecipeActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final int REQUEST_IMAGE_GET = 1;
     private String title;
@@ -131,7 +131,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
         switch (v.getId()) {
             case R.id.confirm:
                 if (image == null || image.isEmpty() || createTitle.getText().toString().isEmpty() || createDescription.getText().toString().isEmpty() || createComposition.getText().toString().isEmpty()) {
-                    Toast.makeText(NewRecipe.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewRecipeActivity.this, "Заполните все поля!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 title = createTitle.getText().toString();
@@ -185,7 +185,7 @@ public class NewRecipe extends AppCompatActivity implements View.OnClickListener
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dss : dataSnapshot.getChildren()) {
                     if (dss.child("title").getValue().toString().equals(title)) {
-                        Toast.makeText(NewRecipe.this, "Рецепт с таким названием уже существует!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewRecipeActivity.this, "Рецепт с таким названием уже существует!", Toast.LENGTH_SHORT).show();
                         Log.d("INFO", "ALREADY ADDED");
                         return;
                     }

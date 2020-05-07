@@ -8,6 +8,10 @@ public class Recipe {
     private String displayName;
     private String uid;
 
+    Recipe(){
+
+    }
+
     public Recipe(String title,String composition,String description, String image, String uid){
         this.title=title;
         this.composition=composition;

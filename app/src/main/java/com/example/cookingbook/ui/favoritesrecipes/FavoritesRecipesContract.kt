@@ -4,7 +4,7 @@ import com.example.cookingbook.model.Recipe
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
 interface FavoritesRecipesContract {
-    interface onDeleteListener {
+    interface OnDeleteListener {
         fun onSuccess(message: String)
     }
 
@@ -20,6 +20,6 @@ interface FavoritesRecipesContract {
 
     interface Interactor {
         fun performDeleteItem(currentTitle: String)
-        fun performFirebaseRecyclerOptionsSettings():FirebaseRecyclerOptions<Recipe>
+        fun setFirebaseRecyclerOptionsSettings():FirebaseRecyclerOptions<Recipe>
     }
 }

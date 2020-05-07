@@ -14,7 +14,11 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 class MyRecipesFragmentAdapter(options: FirebaseRecyclerOptions<Recipe>, _context: Context) : FirebaseRecyclerAdapter<Recipe, MyRecipesViewHolder>(options) {
     private val context:Context = _context
     private val viewUtil = ViewUtil()
-    private lateinit var currentTitle:String
+    private var currentTitle:String = ""
+
+    fun getCurrentTitle():String{
+        return currentTitle
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyRecipesViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.my_list_item,parent,false)

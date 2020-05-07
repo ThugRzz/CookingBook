@@ -40,7 +40,7 @@
         tools:layout="@layout/fragment_about_us" />
     <fragment
         android:id="@+id/changeProfileActivity"
-        android:name="com.example.cookingbook.ui.personalcabinet.ChangeProfileActivity"
+        android:name="com.example.cookingbook.ui.personalcabinet.ChangeProfileFragment"
         android:label="@string/menu_change_profile_info"
         tools:layout="@layout/activity_change_profile" />
 </navigation>

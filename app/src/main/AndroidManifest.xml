@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".RecipeCreatorInfoActivity" />
-        <activity android:name=".ui.personalcabinet.ChangeProfileActivity" />
+        <activity android:name=".ui.personalcabinet.ChangeProfileFragment" />
         <activity android:name=".GlobalRecipeCard" />
-        <activity android:name=".ui.newrecipe.NewRecipe" />
+        <activity android:name=".ui.newrecipe.NewRecipeActivity" />
         <activity android:name=".RecipeCard" />
         <activity
             android:name=".ui.activities.MainActivity"

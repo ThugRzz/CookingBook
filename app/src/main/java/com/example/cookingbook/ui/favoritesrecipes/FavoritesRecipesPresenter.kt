@@ -1,13 +1,13 @@
 package com.example.cookingbook.ui.favoritesrecipes
 
 import com.example.cookingbook.model.Recipe
+
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
-class FavoritesRecipesPresenter(_mView:FavoritesRecipesContract.View): FavoritesRecipesContract.Presenter,FavoritesRecipesContract.onDeleteListener {
-    val mView:FavoritesRecipesContract.View
-    val mInteractor:FavoritesRecipesContract.Interactor
+class FavoritesRecipesPresenter(_mView:FavoritesRecipesContract.View): FavoritesRecipesContract.Presenter,FavoritesRecipesContract.OnDeleteListener {
+    private val mView:FavoritesRecipesContract.View = _mView
+    private val mInteractor:FavoritesRecipesContract.Interactor
     init {
-        mView=_mView
         mInteractor=FavoritesRecipesInteractor(this)
     }
     override fun onSuccess(message: String) {
@@ -19,7 +19,6 @@ class FavoritesRecipesPresenter(_mView:FavoritesRecipesContract.View): Favorites
     }
 
     override fun getFirebaseRecyclerOptionsSettings(): FirebaseRecyclerOptions<Recipe> {
-        return mInteractor.performFirebaseRecyclerOptionsSettings();
+        return mInteractor.setFirebaseRecyclerOptionsSettings()
     }
-
 }

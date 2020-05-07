@@ -11,51 +11,54 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cookingbook.constant.MenuItems;
 import com.example.cookingbook.R;
 import com.example.cookingbook.model.Recipe;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
+import static com.example.cookingbook.constant.MenuItems.MENU_DELETE;
+
 public class FavoritesRecipesFragment extends Fragment implements FavoritesRecipesContract.View {
 
-    private RecyclerView favoriteList;
-    private FirebaseRecyclerAdapter<Recipe, FavoritesViewHolder> adapter;
-    private FavoritesRecipesPresenter mFavoritesRecipesPresenter;
+    private RecyclerView mRecipeList;
+    private FirebaseRecyclerAdapter<Recipe, FavoritesViewHolder> mAdapter;
+    private FavoritesRecipesPresenter mPresenter;
 
     @Override
     public void onStart() {
         super.onStart();
-        adapter = new FavoritesRecipesFragmentAdapter(mFavoritesRecipesPresenter.getFirebaseRecyclerOptionsSettings(), getContext());
-        favoriteList.setAdapter(adapter);
-        adapter.startListening();
+        mAdapter = new FavoritesRecipesFragmentAdapter(mPresenter.getFirebaseRecyclerOptionsSettings(), Objects.requireNonNull(getContext()));
+        mRecipeList.setAdapter(mAdapter);
+        mAdapter.startListening();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_favorites_recipes, container, false);
-        favoriteList = root.findViewById(R.id.TEMP);
-       // LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        //favoriteList.setLayoutManager(layoutManager);
-        registerForContextMenu(favoriteList);
-        mFavoritesRecipesPresenter=new FavoritesRecipesPresenter(this);
+        init(root);
+        registerForContextMenu(mRecipeList);
         return root;
+    }
+
+    private void init(View root) {
+        mRecipeList = root.findViewById(R.id.TEMP);
+        mPresenter = new FavoritesRecipesPresenter(this);
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case MenuItems.MENU_DELETE:
-                String currentTitle = ((FavoritesRecipesFragmentAdapter) adapter).getCurrentTitle();
-                mFavoritesRecipesPresenter.onDeleteViewWasClicked(currentTitle);
-                break;
+        if (item.getItemId() == MENU_DELETE) {
+            String currentTitle = ((FavoritesRecipesFragmentAdapter) mAdapter).getCurrentTitle();
+            mPresenter.onDeleteViewWasClicked(currentTitle);
         }
         return super.onContextItemSelected(item);
     }
 
     @Override
     public void onDeleteSuccess(@NotNull String message) {
-        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

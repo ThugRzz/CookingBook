@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.cookingbook.model.Recipe;
 import com.example.cookingbook.parcelablemodel.CreatorInfo;
+import com.example.cookingbook.parcelablemodel.RecipeInfo;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +38,7 @@ public class GlobalRecipeCard extends AppCompatActivity {
     private DatabaseReference mRef;
     private DatabaseReference ref;
     private CreatorInfo creatorInfo;
+    private RecipeInfo recipeInfo;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -123,11 +125,12 @@ public class GlobalRecipeCard extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        image = getIntent().getExtras().getString("image");
-        title = getIntent().getExtras().getString("title");
-        composition = getIntent().getExtras().getString("composition");
-        description = getIntent().getExtras().getString("description");
-        uid = getIntent().getExtras().getString("uid");
+        recipeInfo = getIntent().getParcelableExtra("RecipeInfo");
+        image = recipeInfo.getImageUrl();
+        title = recipeInfo.getTitle();
+        composition=recipeInfo.getComposition();
+        description=recipeInfo.getDescription();
+        uid = getIntent().getExtras().getString("Uid");
 
         ImageView imageView = findViewById(R.id.picGlobal);
         TextView displayNameView = findViewById(R.id.displayNameTextView);
