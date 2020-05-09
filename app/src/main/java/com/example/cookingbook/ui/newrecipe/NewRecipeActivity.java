@@ -3,14 +3,14 @@ package com.example.cookingbook.ui.newrecipe;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +18,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.cookingbook.R;
+import com.example.cookingbook.base.BaseActivity;
 import com.example.cookingbook.model.Recipe;
 import com.example.cookingbook.util.ViewUtil;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,10 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
-public class NewRecipeActivity extends AppCompatActivity implements View.OnClickListener {
+import org.jetbrains.annotations.NotNull;
 
-    public static final int REQUEST_IMAGE_GET = 1;
+public class NewRecipeActivity extends BaseActivity implements View.OnClickListener,NewRecipeContract.View {
+
+    private static final int REQUEST_IMAGE_GET = 1;
     private String title;
     private String description;
     private String composition;
@@ -52,36 +54,25 @@ public class NewRecipeActivity extends AppCompatActivity implements View.OnClick
     private StorageReference mStorageRef;
     private Button changeImageButton;
     private ViewUtil viewUtil;
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private Toolbar toolbar;
+    private NewRecipePresenter mPresenter;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarNewRecipe);
+        init();
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        viewUtil = new ViewUtil();
-        createComposition = findViewById(R.id.Composition);
-        createDescription = findViewById(R.id.Description);
-        createTitle = findViewById(R.id.Title);
-        createImage = findViewById(R.id.recipePic);
-        changeImageButton = findViewById(R.id.changeImageButton);
-        createRecipeButton = findViewById(R.id.confirm);
+        Button testBtn = findViewById(R.id.test);
+
         createRecipeButton.setOnClickListener(this);
         changeImageButton.setOnClickListener(this);
+        testBtn.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
@@ -89,12 +80,29 @@ public class NewRecipeActivity extends AppCompatActivity implements View.OnClick
 
     }
 
+    private void init() {
+        toolbar = (Toolbar) findViewById(R.id.toolbarNewRecipe);
+        viewUtil = new ViewUtil();
+        createComposition = findViewById(R.id.Composition);
+        createDescription = findViewById(R.id.Description);
+        createTitle = findViewById(R.id.Title);
+        createImage = findViewById(R.id.recipePic);
+        changeImageButton = findViewById(R.id.changeImageButton);
+        createRecipeButton = findViewById(R.id.confirm);
+        mPresenter=new NewRecipePresenter(this);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
-            final Uri selectedImage = data.getData();
+            viewUtil.putPicture(data.getDataString(),createImage);
+            imageUri = data.getData();
+//            image = mPresenter.getPhotoStringLink();
+           // Log.d("IMAGE URI",image);
+           // viewUtil.putPicture(image,createImage);
+            /*final Uri selectedImage = data.getData();
             String name = createNameForImage();
             final StorageReference imageRef = mStorageRef.child("images/" + name + ".jpg");
             UploadTask uploadTask = imageRef.putFile(selectedImage);
@@ -117,13 +125,8 @@ public class NewRecipeActivity extends AppCompatActivity implements View.OnClick
                         }
                     }
                 }
-            });
+            });*/
         }
-    }
-
-    private void setImageUrl(String url) {
-        image = url;
-        viewUtil.putPicture(url,createImage);
     }
 
     @Override
@@ -142,12 +145,24 @@ public class NewRecipeActivity extends AppCompatActivity implements View.OnClick
 
                 break;
             case R.id.changeImageButton:
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, REQUEST_IMAGE_GET);
-                }
+                mPresenter.onChangeImageButtonWasClicked(getPackageManager());
                 break;
+            case R.id.test:
+                String name = createNameForImage();
+                StorageReference imageRef = mStorageRef.child("images/" + name + ".jpg");
+                Log.d("IMAGEURI",imageUri.toString());
+                imageRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    }
+                });
+                imageRef.getDownloadUrl();
+                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Log.d("URI",uri.toString());
+                    }
+                });
         }
     }
 
@@ -198,6 +213,11 @@ public class NewRecipeActivity extends AppCompatActivity implements View.OnClick
 
             }
         });
+    }
+
+    @Override
+    public void onReadyActivityStartForResult(@NotNull Intent intent) {
+        startActivityForResult(intent,REQUEST_IMAGE_GET);
     }
 }
 

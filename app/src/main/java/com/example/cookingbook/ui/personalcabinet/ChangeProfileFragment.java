@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.cookingbook.R;
+import com.example.cookingbook.util.ViewUtil;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -44,25 +45,22 @@ public class ChangeProfileFragment extends Fragment implements View.OnClickListe
     private ImageView avatarImage;
     private StorageReference mStorageRef;
     private DatabaseReference mRef;
+    private ViewUtil viewUtil;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_change_profile,container,false);
+        View root = inflater.inflate(R.layout.activity_change_profile, container, false);
+        viewUtil=new ViewUtil();
         user = FirebaseAuth.getInstance().getCurrentUser();
-//        name = getActivity().getIntent().getExtras().getString("NAME");
+        name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         phoneET = root.findViewById(R.id.changePhoneNumber);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("userInfo");
         nameET = root.findViewById(R.id.changeNickname);
         nameET.setText(name);
         avatarImage = root.findViewById(R.id.changeAvatar);
-        Picasso.get()
-                .load(user.getPhotoUrl())
-                .placeholder(R.drawable.defaultimage)
-                .fit()
-                .centerCrop()
-                .into(avatarImage);
+        viewUtil.putPicture(user.getPhotoUrl().toString(),avatarImage);
         avatar = user.getPhotoUrl();
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -70,6 +68,7 @@ public class ChangeProfileFragment extends Fragment implements View.OnClickListe
                 if (dataSnapshot.child("number").getValue() == null) {
                 } else {
                     phoneET.setText(dataSnapshot.child("number").getValue().toString());
+
                 }
             }
 
