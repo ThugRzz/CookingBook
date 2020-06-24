@@ -1,4 +1,4 @@
-package com.example.cookingbook;
+package com.example.cookingbook.ui.activities;
 
 
 import androidx.appcompat.app.ActionBar;
@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cookingbook.R;
 import com.example.cookingbook.base.BaseActivity;
 import com.example.cookingbook.parcelablemodel.RecipeInfo;
 import com.example.cookingbook.util.ViewUtil;

@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.cookingbook.R
 import com.example.cookingbook.model.Recipe
-import com.example.cookingbook.RecipeCard
+import com.example.cookingbook.ui.activities.RecipeCard
 import com.example.cookingbook.parcelablemodel.RecipeInfo
 import com.example.cookingbook.util.ViewUtil
 import com.firebase.ui.database.FirebaseRecyclerAdapter

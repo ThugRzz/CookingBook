@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.example.cookingbook.*
 import com.example.cookingbook.model.Recipe
 import com.example.cookingbook.parcelablemodel.RecipeInfo
+import com.example.cookingbook.ui.activities.GlobalRecipeCard
 import com.example.cookingbook.util.ViewUtil
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions

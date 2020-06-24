@@ -5,7 +5,6 @@ public class Recipe {
     private String description;
     private String composition;
     private String image;
-    private String displayName;
     private String uid;
 
     Recipe(){
@@ -43,8 +42,6 @@ public class Recipe {
         this.image = image;
     }
 
-    public void setDisplayName(String displayName) {this.displayName=displayName;}
-
     public void setUid(String uid){this.uid=uid;}
 
     public String getTitle() {
@@ -62,8 +59,6 @@ public class Recipe {
     public String getImage() {
         return this.image;
     }
-
-    public String getDisplayName(){return this.displayName;}
 
     public String getUid(){return this.uid;}
 }

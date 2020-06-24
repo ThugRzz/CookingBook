@@ -1,4 +1,4 @@
-package com.example.cookingbook;
+package com.example.cookingbook.ui.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cookingbook.R;
 import com.example.cookingbook.model.Recipe;
 import com.example.cookingbook.parcelablemodel.CreatorInfo;
 import com.example.cookingbook.parcelablemodel.RecipeInfo;

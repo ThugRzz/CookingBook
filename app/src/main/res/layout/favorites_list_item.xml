@@ -1,35 +1,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginStart="16dp"
-    android:layout_marginBottom="16dp"
-    android:layout_marginEnd="16dp">
-    <ImageView
-        android:id="@+id/favoriteImage"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:scaleType="centerCrop"
-        android:layout_width="130dp"
-        android:layout_height="130dp" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        app:cardCornerRadius="12dp">
 
-        <TextView
-            android:id="@+id/favoriteTitle"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/favoriteComposition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/favoriteImage"
+                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
+                android:scaleType="centerCrop"
+                android:layout_width="130dp"
+                android:layout_height="130dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/favoriteTitle"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/favoriteComposition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
 
-    </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

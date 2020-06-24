@@ -1,27 +1,27 @@
 package com.example.cookingbook.ui.newrecipe
 
 import android.net.Uri
+import android.util.Log
 import com.example.cookingbook.model.Recipe
-import com.example.cookingbook.util.ViewUtil
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 
 
-class NewRecipeInteractor : NewRecipeContract.Interactor {
+class NewRecipeInteractor(_mOnPushRecipeListener: NewRecipeContract.onPushRecipeListener) : NewRecipeContract.Interactor {
 
+    private val mListener: NewRecipeContract.onPushRecipeListener = _mOnPushRecipeListener
     private val mStorageRef = FirebaseStorage.getInstance().reference
-    private val viewUtil: ViewUtil = ViewUtil()
     lateinit var uploadTask: UploadTask
-    private val mRef:DatabaseReference = FirebaseDatabase.getInstance()
+    private var mRef: DatabaseReference = FirebaseDatabase.getInstance()
             .reference
             .child("users")
             .child(FirebaseAuth.getInstance().currentUser!!.uid)
             .child("recipes")
+
+    private val mQuery: Query = mRef.orderByChild("title")
 
     private fun createNameForImage(): String {
         val symbols = "qwertyuiopasdfghjklzxcvbnm"
@@ -33,9 +33,9 @@ class NewRecipeInteractor : NewRecipeContract.Interactor {
         return randString.toString()
     }
 
-    private fun setImageUrl(localImageUri: Uri){
-        val name:String = createNameForImage()
-        val imageRef:StorageReference = mStorageRef.child("images/$name.jpg")
+    override fun performPushRecipe(localImageUri: Uri, title: String, composition: String, description: String) {
+        val name: String = createNameForImage()
+        val imageRef: StorageReference = mStorageRef.child("images/$name.jpg")
         uploadTask = imageRef.putFile(localImageUri)
         val uriTask = uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
@@ -47,14 +47,27 @@ class NewRecipeInteractor : NewRecipeContract.Interactor {
                 val downloadUri = task.result
                 if (downloadUri != null) {
                     val photoStringLink = downloadUri.toString()
+                    mQuery.equalTo(title)
+                    mQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(error: DatabaseError) {
+
+                        }
+
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for (dss in dataSnapshot.children) {
+                                if (dss.child("title").value.toString() == title) {
+                                    mListener.onFailure("Рецепт с таким названием уже существует")
+                                    Log.d("INFO", "ALREADY ADDED")
+                                    return
+                                }
+                            }
+                            val pushRecipe = Recipe(title, composition, description, photoStringLink)
+                            mRef.push().setValue(pushRecipe)
+                            mListener.onSuccess("Рецепт добавлен")
+                        }
+                    })
                 }
             }
         }
-
-    }
-
-    override fun pushRecipe(title: String, composition: String, description: String, image: String) {
-        val pushRecipe = Recipe(title, composition, description, image)
-        mRef.push().setValue(pushRecipe)
     }
 }

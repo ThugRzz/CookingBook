@@ -3,7 +3,7 @@ package com.example.cookingbook.ui.globalrecipes
 import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cookingbook.GlobalRecipeCard
+import com.example.cookingbook.ui.activities.GlobalRecipeCard
 import com.example.cookingbook.model.Recipe
 import com.firebase.ui.database.FirebaseRecyclerOptions
 

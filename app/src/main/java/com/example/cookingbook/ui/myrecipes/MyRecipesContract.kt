@@ -18,7 +18,6 @@ interface MyRecipesContract {
         fun onRecipeViewWasClicked(context: Context)
         fun getFirebaseRecyclerOptionsSettings():FirebaseRecyclerOptions<Recipe>
         fun getSearchFirebaseRecyclerOptionsSettings(searchString: String):FirebaseRecyclerOptions<Recipe>
-        fun onCreateRecipeViewWasClicked(context: Context)
         fun onResume()
     }
     interface Interactor{

@@ -7,7 +7,6 @@
     android:focusableInTouchMode="true"
     android:focusable="true">
 
-
     <EditText
         android:id="@+id/awd"
         android:layout_width="match_parent"
@@ -27,8 +26,7 @@
         android:id="@+id/myList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/awd"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="45dp"
         android:overScrollMode="never"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,6 +1,7 @@
 package com.example.cookingbook.ui.myrecipes;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,18 +10,25 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookingbook.R;
 import com.example.cookingbook.model.Recipe;
+import com.example.cookingbook.ui.newrecipe.NewRecipeDialogFragment;
 import com.example.cookingbook.util.SearchTextWatcher;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observer;
+import rx.functions.Action1;
 
 import static com.example.cookingbook.constant.MenuItems.MENU_DELETE;
 import static com.example.cookingbook.constant.MenuItems.MENU_SHARE;
@@ -82,7 +90,8 @@ public class MyRecipesFragment extends Fragment implements View.OnClickListener,
 
     @Override
     public void onClick(View v) {
-        mPresenter.onCreateRecipeViewWasClicked(Objects.requireNonNull(getContext()));
+        DialogFragment dialog = new NewRecipeDialogFragment();
+        dialog.show(getParentFragmentManager(),NewRecipeDialogFragment.class.getSimpleName());
     }
 
     @Override

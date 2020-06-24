@@ -1,6 +1,8 @@
-package com.example.cookingbook.ui.personalcabinet;
+package com.example.cookingbook.ui.personalcabinet.privatecabinet;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,12 +15,15 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cookingbook.R;
 import com.example.cookingbook.ui.activities.LoginActivity;
+import com.example.cookingbook.ui.activities.RecipeCreatorInfoActivity;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 public class PersonalCabinetFragment extends Fragment {
     private final static String NAME = "NAME";
@@ -54,15 +61,27 @@ public class PersonalCabinetFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.changeProfile:
-/*                Intent changeProfileIntent = new Intent(getContext(), ChangeProfileActivity.class);
-                changeProfileIntent.putExtra(NAME, mAuth.getCurrentUser().getDisplayName());
-                startActivity(changeProfileIntent);*/
                 navController.navigate(R.id.changeProfileActivity);
                 break;
             case R.id.LogOut:
-                mAuth.signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
+                final AlertDialog callDialog= new AlertDialog.Builder(
+                        Objects.requireNonNull(PersonalCabinetFragment.this.getContext())).setMessage("Вы действительно хотите выйти?").setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAuth.signOut();
+                        Intent intent = new Intent(getContext(), LoginActivity.class);
+                        startActivity(intent);
+                    }
+                }).setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).create();
+
+                callDialog.show();
+                callDialog.getButton(callDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimary));
+                callDialog.getButton(callDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimary));
                 break;
         }
         return super.onOptionsItemSelected(item);

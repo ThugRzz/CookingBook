@@ -22,11 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RecipeCreatorInfoActivity" />
-        <activity android:name=".ui.personalcabinet.ChangeProfileFragment" />
-        <activity android:name=".GlobalRecipeCard" />
+        <activity android:name=".ui.activities.RecipeCreatorInfoActivity" />
+        <activity android:name=".ui.personalcabinet.changeprofile.ChangeProfileFragment" />
+        <activity android:name=".ui.activities.GlobalRecipeCard" />
         <activity android:name=".ui.newrecipe.NewRecipeActivity" />
-        <activity android:name=".RecipeCard" />
+        <activity android:name=".ui.activities.RecipeCard" />
         <activity
             android:name=".ui.activities.MainActivity"
             android:label="@string/app_name"

@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/nav_personal_cabinet"
-        android:name="com.example.cookingbook.ui.personalcabinet.PersonalCabinetFragment"
+        android:name="com.example.cookingbook.ui.personalcabinet.privatecabinet.PersonalCabinetFragment"
         android:label="@string/menu_personalCabinet"
         tools:layout="@layout/fragment_personal_cabinet" >
         <action
@@ -40,7 +40,7 @@
         tools:layout="@layout/fragment_about_us" />
     <fragment
         android:id="@+id/changeProfileActivity"
-        android:name="com.example.cookingbook.ui.personalcabinet.ChangeProfileFragment"
+        android:name="com.example.cookingbook.ui.personalcabinet.changeprofile.ChangeProfileFragment"
         android:label="@string/menu_change_profile_info"
         tools:layout="@layout/activity_change_profile" />
 </navigation>

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.example.cookingbook.*
 import com.example.cookingbook.model.Recipe
 import com.example.cookingbook.parcelablemodel.RecipeInfo
+import com.example.cookingbook.ui.activities.RecipeCard
 import com.example.cookingbook.util.ViewUtil
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -35,7 +36,7 @@ class MyRecipesFragmentAdapter(options: FirebaseRecyclerOptions<Recipe>, _contex
         }
 
         holder.itemView.setOnClickListener{
-            val recipeIntent = Intent(context,RecipeCard::class.java)
+            val recipeIntent = Intent(context, RecipeCard::class.java)
             recipeIntent.putExtra("RecipeInfo", RecipeInfo(model.title, model.composition, model.description, model.image))
             context.startActivity(recipeIntent)
         }

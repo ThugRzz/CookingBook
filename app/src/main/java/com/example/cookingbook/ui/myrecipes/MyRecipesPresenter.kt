@@ -3,10 +3,10 @@ package com.example.cookingbook.ui.myrecipes
 import android.content.Context
 import android.content.Intent
 
-import com.example.cookingbook.RecipeCard
+import com.example.cookingbook.ui.activities.RecipeCard
 import com.example.cookingbook.model.Recipe
 
-import com.example.cookingbook.ui.newrecipe.NewRecipeActivity
+
 
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
@@ -34,11 +34,6 @@ class MyRecipesPresenter(_mView: MyRecipesContract.View) : MyRecipesContract.Pre
 
     override fun getSearchFirebaseRecyclerOptionsSettings(searchString: String): FirebaseRecyclerOptions<Recipe> {
         return mInteractor.setSearchFirebaseRecyclerOptionsSettings(searchString)
-    }
-
-    override fun onCreateRecipeViewWasClicked(context: Context) {
-        val createRecipeIntent = Intent(context,NewRecipeActivity::class.java)
-        context.startActivity(createRecipeIntent)
     }
 
     override fun onResume() {
